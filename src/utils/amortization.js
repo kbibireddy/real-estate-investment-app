@@ -24,7 +24,7 @@ export const generateAmortization = (listingData) => {
     let monthly_principal_paid = monthly_mortgage_payment - monthly_interest_paid;
     let cumulative_principal_paid = monthly_principal_paid;
     let cumulative_costs = monthly_costs + closing_fee;
-
+    
     // First month
     if (i > 0 && result.length > 0) {
       outstanding_loan_amount = parseFloat(result[result.length - 1]["outstanding_loan_amount"]) - parseFloat(result[result.length - 1]["monthly_principal_paid"]);
@@ -33,9 +33,9 @@ export const generateAmortization = (listingData) => {
       monthly_principal_paid = monthly_mortgage_payment - monthly_interest_paid;
       cumulative_principal_paid = monthly_principal_paid + parseFloat(result[result.length - 1]["cumulative_principal_paid"]);
       cumulative_costs = monthly_costs + parseFloat(result[result.length - 1]["cumulative_costs"]);
-
     }
-
+    
+    let cost_of_investment = parseFloat(cumulative_costs + cumulative_interest_paid).toFixed(2);
     let equity = (((down_payment_amount + cumulative_principal_paid) * 100) / listingData["price"])
 
     let amMonthlyUnit = {
@@ -49,6 +49,7 @@ export const generateAmortization = (listingData) => {
       "equity": parseFloat(equity).toFixed(2),
       "value_earned": parseFloat(equity * listingData["price"] / 100).toFixed(2),
       "cumulative_costs": cumulative_costs,
+      "cost_of_investment": cost_of_investment
       
     };
 

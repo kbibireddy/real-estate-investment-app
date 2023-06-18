@@ -8,6 +8,7 @@ import Slider from '@mui/material/Slider';
 import { formatNumber, toPercentageString } from '../utils/dataConverter';
 import { convertToTitleCase } from '../utils/common';
 import { stepClasses } from '@mui/material';
+import store from '../store/store';
 
 class AdjustableComponent extends PureComponent {
   constructor(props) {
@@ -65,9 +66,34 @@ class AdjustableComponent extends PureComponent {
     }
   }
 
+  valueCorrector(label, value) {
+    if (
+      label === 'property_tax_percent' ||
+      label === 'home_insurance_percent' ||
+      label === 'intrest_rate' ||
+      label === 'lender_fee_percent' ||
+      label === 'down_payment_percent'
+    ) {
+      return value/100;
+    }
+    return value
+  }
+
   handleSliderChange = (event, value) => {
     this.setState({ value });
   };
+
+  handleSliderChangeCommit = (event, value) => {
+    const { label } = this.state;
+    store.dispatch({
+      type: "UPDATE_LISTING_DATA",
+      payload: {"key": label, "value": this.valueCorrector(label, value)}
+    });
+    store.dispatch({
+      type: "UPDATE_AMORTIZATION_DATA",
+      payload: store.getState().listingState.data
+    });
+  }
 
   render() {
     return (
@@ -87,6 +113,7 @@ class AdjustableComponent extends PureComponent {
               value={this.state.value}
               size="small"
               onChange={this.handleSliderChange}
+              onChangeCommitted={this.handleSliderChangeCommit}
               marks={this.state.marks}
               min={this.state.minValue}
               max={this.state.maxValue}
@@ -98,8 +125,6 @@ class AdjustableComponent extends PureComponent {
   }
 }
 
-const mapStateToProps = (state) => ({
-  data: state.apiData
-});
-
-export default connect(mapStateToProps)(AdjustableComponent);
+// MapStateToProps
+const mstp = (state) => (state.listingState)
+export default connect(mstp)(AdjustableComponent);

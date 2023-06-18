@@ -1,30 +1,51 @@
-import { configureStore } from '@reduxjs/toolkit';
+import { configureStore, combineReducers } from '@reduxjs/toolkit';
 import { sampleData } from '../data/sampleApiData';
+import { generateAmortization } from '../utils/amortization';
 
+// Listing State
+const initialListingState = {
+  data: sampleData
+}
 
-// Define an initial state for the store
-const INITIAL_STATE = {
-  apiData: sampleData,
-  amortizedData: {}
+function listingStateReducer(state = initialListingState, action) {
+  switch (action.type) {
+    case 'UPDATE_LISTING_DATA':
+      return { ...state, data: {...state.data, [action.payload.key]: action.payload.value} };
+    default:
+      return state;
+  }
+  store.dispatch()
+}
+
+// App State
+
+const initialAppState = {
+  amortizationData: generateAmortization(sampleData)
 };
 
-
-// Define a reducer function to update the store based on actions
-function reducer(state = INITIAL_STATE, action) {
+function appStateReducer(state = initialAppState, action) {
   switch (action.type) {
-    case 'UPDATE_DATA':
-      return { ...state, data: action.payload };
+    case 'UPDATE_AMORTIZATION_DATA':
+      const newAmortizationData = generateAmortization(action.payload);
+      return { ...state, amortizationData: newAmortizationData };
     default:
       return state;
   }
 }
 
-
-// Create the Redux store
-const store = configureStore({
-  reducer: reducer
+// Combine reducers 
+const rootReducer = combineReducers({
+  appState: appStateReducer,
+  listingState: listingStateReducer
 });
 
-
+const store = configureStore({reducer: rootReducer});
+// store.listingState.subscribe(() => {
+//   const { listingState } = store.getState();
+//   store.dispatch({
+//     type: "UPDATE_AMORTIZATION_DATA",
+//     payload: listingState.data
+//   });
+// })
 export default store;
 

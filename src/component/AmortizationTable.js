@@ -43,6 +43,7 @@ function AmortizationTable({ data }) {
             <StyledTableCell align="right">Monthly Principal Paid</StyledTableCell>
             <StyledTableCell align="right">Cumulative Interest Paid</StyledTableCell>
             <StyledTableCell align="right">Monthly Interest Paid</StyledTableCell>
+            <StyledTableCell align="right">Cumulative Costs (Closing Costs + HOA + Property Tax + Insurance)</StyledTableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -55,6 +56,7 @@ function AmortizationTable({ data }) {
               <TableCell align="right">{row.monthly_principal_paid}</TableCell>
               <TableCell align="right">{row.cumulative_interest_paid}</TableCell>
               <TableCell align="right">{row.monthly_interest_paid}</TableCell>
+              <TableCell align="right">{row.cumulative_costs}</TableCell>
             </StyledTableRow>
           ))}
         </TableBody>

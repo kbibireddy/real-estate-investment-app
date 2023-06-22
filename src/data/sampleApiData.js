@@ -8,6 +8,7 @@ export const sampleData = {
     "hoa_fee_in_dollars": 0,
     "property_tax_percent": 0.91,
     "home_insurance_percent": 0.33,
+    "home_yoy_appriciation_percent": 4,
     "tenure_in_years": 30,
     "tenure_in_months": 360,
     "intrest_rate": 4,

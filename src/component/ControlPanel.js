@@ -12,6 +12,7 @@ export default class ControlPanel extends PureComponent {
                 <Grid.Column><AdjustableComponent label="price"/></Grid.Column>
                 <Grid.Column><AdjustableComponent label="property_tax_percent"/></Grid.Column>
                 <Grid.Column><AdjustableComponent label="home_insurance_percent"/></Grid.Column>
+                <Grid.Column><AdjustableComponent label="home_yoy_appriciation_percent"/></Grid.Column>
                 </Grid.Row>
                 <Grid.Row>
                 <Grid.Column><AdjustableComponent label="tenure_in_years"/></Grid.Column>

@@ -4,6 +4,7 @@ export const generateAmortization = (listingData) => {
   let monthly_interest_rate = listingData["intrest_rate"] / 1200;
   let month_count = listingData["tenure_in_years"] * 12;
   let monthly_mortgage_payment = loan_amount * ((monthly_interest_rate * ((1 + monthly_interest_rate) ** month_count)) / (((1 + monthly_interest_rate) ** month_count) - 1));
+  let home_value_after_appriciation = listingData["price"] * ( 1 + (listingData["home_yoy_appriciation_percent"] / 1200));
   
   // One time costs
   let lender_fee = parseFloat(listingData["lender_fee_percent"] * listingData["price"] / 100);
@@ -24,7 +25,7 @@ export const generateAmortization = (listingData) => {
     let monthly_principal_paid = monthly_mortgage_payment - monthly_interest_paid;
     let cumulative_principal_paid = monthly_principal_paid;
     let cumulative_costs = monthly_costs + closing_fee;
-    
+
     // First month
     if (i > 0 && result.length > 0) {
       outstanding_loan_amount = parseFloat(result[result.length - 1]["outstanding_loan_amount"]) - parseFloat(result[result.length - 1]["monthly_principal_paid"]);
@@ -33,23 +34,30 @@ export const generateAmortization = (listingData) => {
       monthly_principal_paid = monthly_mortgage_payment - monthly_interest_paid;
       cumulative_principal_paid = monthly_principal_paid + parseFloat(result[result.length - 1]["cumulative_principal_paid"]);
       cumulative_costs = monthly_costs + parseFloat(result[result.length - 1]["cumulative_costs"]);
+      home_value_after_appriciation = parseFloat(result[result.length - 1]["home_value_after_appriciation"]) * ( 1 + (listingData["home_yoy_appriciation_percent"] / 1200));
     }
     
     let cost_of_investment = parseFloat(cumulative_costs + cumulative_interest_paid).toFixed(2);
     let equity = (((down_payment_amount + cumulative_principal_paid) * 100) / listingData["price"])
+    let equity_value = listingData["price"] * equity / 100
+    let equity_value_after_appriciation = home_value_after_appriciation * equity/100
 
     let amMonthlyUnit = {
       "month_number": i + 1,
       "year": Math.floor((i + 1) / 12) + 1,
+      "home_value_after_appriciation": parseFloat(home_value_after_appriciation).toFixed(2),
       "outstanding_loan_amount": Math.floor(outstanding_loan_amount),
       "monthly_interest_paid": parseFloat(monthly_interest_paid).toFixed(2),
       "cumulative_interest_paid": parseFloat(cumulative_interest_paid).toFixed(2),
       "monthly_principal_paid": parseFloat(monthly_principal_paid).toFixed(2),
       "cumulative_principal_paid": parseFloat(cumulative_principal_paid).toFixed(2),
       "equity": parseFloat(equity).toFixed(2),
+      "equity_value": parseFloat(equity_value).toFixed(2),
+      "equity_value_after_appriciation": parseFloat(equity_value_after_appriciation).toFixed(2),
       "value_earned": parseFloat(equity * listingData["price"] / 100).toFixed(2),
       "cumulative_costs": cumulative_costs,
-      "cost_of_investment": cost_of_investment
+      "cost_of_investment": cost_of_investment,
+      "net_income": parseFloat(parseFloat(equity_value_after_appriciation).toFixed(2) - cost_of_investment).toFixed(2)
       
     };
 

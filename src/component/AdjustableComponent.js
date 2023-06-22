@@ -54,6 +54,7 @@ class AdjustableComponent extends PureComponent {
     if (
       label === 'property_tax_percent' ||
       label === 'home_insurance_percent' ||
+      label === 'home_yoy_appriciation_percent' ||
       label === 'intrest_rate' ||
       label === 'lender_fee_percent' ||
       label === 'down_payment_percent'
@@ -70,6 +71,7 @@ class AdjustableComponent extends PureComponent {
     if (
       label === 'property_tax_percent' ||
       label === 'home_insurance_percent' ||
+      label === 'home_yoy_appriciation_percent' ||
       label === 'intrest_rate' ||
       label === 'lender_fee_percent' ||
       label === 'down_payment_percent'

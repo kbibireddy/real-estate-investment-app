@@ -14,6 +14,8 @@ function App() {
             <Grid.Row><Container>Real Estate Inventment Analyis Tool</Container></Grid.Row>
             <Grid.Row><ControlPanel/></Grid.Row>
             <Grid.Row><AmortizationTable/></Grid.Row>
+            <Grid.Row><ReLineChart items={["net_income"]}/></Grid.Row>
+            <Grid.Row><ReLineChart items={["cost_of_investment", "equity_value_after_appriciation"]}/></Grid.Row>
             <Grid.Row><ReLineChart items={["outstanding_loan_amount", "cumulative_interest_paid", "cumulative_principal_paid", "cost_of_investment"]}/></Grid.Row>
             <Grid.Row><ReLineChart items={["equity"]}/></Grid.Row>
             <Grid.Row><ReLineChart items={["value_earned"]}/></Grid.Row>

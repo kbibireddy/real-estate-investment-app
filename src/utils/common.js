@@ -29,3 +29,42 @@ export const getRandomColor = () => {
   return color;
 }
 
+function numberWithCommas(x) {
+  return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}
+
+function formatNumber(num) {
+  if (num >= 1000 && num < 1000000) {
+    return "$" + numberWithCommas((num / 1000).toFixed(1)) + "K";
+  } else if (num >= 1000000) {
+    return "$" + numberWithCommas((num / 1000000).toFixed(1)) + "M";
+  } else {
+    return "$" + num;
+  }
+}
+
+export const customChartFormatter = (key, value) => {
+  switch(key) {
+
+    case "home_value_after_appriciation":
+    case "outstanding_loan_amount":
+    case "monthly_interest_paid":
+    case "cumulative_interest_paid":
+    case "monthly_principal_paid":
+    case "cumulative_principal_paid":
+    case "equity_value":
+    case "equity_value_after_appriciation":
+    case "value_earned":
+    case "cumulative_costs":
+    case "cost_of_investment":
+    case "net_income":
+      return [formatNumber(value), convertToTitleCase(key)];
+    case "equity": 
+    return [value + "%", convertToTitleCase(key)];
+    case "month_number":
+    case "year":
+      return [value, convertToTitleCase(key)];
+  }
+
+} 
+

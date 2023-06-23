@@ -57,6 +57,7 @@ export const customChartFormatter = (key, value) => {
     case "value_earned":
     case "cumulative_costs":
     case "cost_of_investment":
+    case "rent_if_rented":
     case "net_income":
       return [formatNumber(value), convertToTitleCase(key)];
     case "equity": 

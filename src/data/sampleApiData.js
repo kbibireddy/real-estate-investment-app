@@ -13,5 +13,7 @@ export const sampleData = {
     "tenure_in_months": 360,
     "intrest_rate": 4,
     "down_payment_percent": 20,
-    "lender_fee_percent": 1
+    "lender_fee_percent": 1,
+    "rent_if_rented": 2500,
+    "rental_yoy_appriciation_percent": 3
 }

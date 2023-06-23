@@ -4,12 +4,18 @@ import { connect } from 'react-redux';
 import { Container } from '@mui/material';
 import { getRandomColor, customChartFormatter } from '../utils/common';
 
-function ReLineChart({ data, items }) {
+function ReLineChart({ data, items, domain }) {
+
+  let yAxisDomain = [0, "auto"];
+  if (domain) {
+    yAxisDomain = domain;
+  }
 
   return (
     <Container maxWidth="sm" style={{margin:"auto", background:"white", padding:10, borderRadius:5}}>
       <ResponsiveContainer width="100%" height={500}>
         <LineChart
+          syncMethod={"index"}
           width={500}
           height={300}
           data={data}
@@ -21,7 +27,7 @@ function ReLineChart({ data, items }) {
           }}
         >
           <XAxis dataKey="month_number" style={{fontSize: 12}}/>
-          <YAxis style={{fontSize: 12}}/>
+          <YAxis type="number" domain={yAxisDomain} style={{fontSize: 12}}/>
           <Tooltip formatter={(value, name, props)=>customChartFormatter(name, value)} wrapperStyle={{fontSize: 12}}/>
           <Legend wrapperStyle={{fontSize: 12}}/>
           {items.map((item) => {

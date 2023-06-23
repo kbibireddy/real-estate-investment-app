@@ -25,8 +25,10 @@ export const generateAmortization = (listingData) => {
     let monthly_principal_paid = monthly_mortgage_payment - monthly_interest_paid;
     let cumulative_principal_paid = monthly_principal_paid;
     let cumulative_costs = monthly_costs + closing_fee;
+    let rent_if_rented = listingData["rent_if_rented"];
 
-    // First month
+
+    // All months expecept first month
     if (i > 0 && result.length > 0) {
       outstanding_loan_amount = parseFloat(result[result.length - 1]["outstanding_loan_amount"]) - parseFloat(result[result.length - 1]["monthly_principal_paid"]);
       monthly_interest_paid = outstanding_loan_amount * monthly_interest_rate;
@@ -35,12 +37,14 @@ export const generateAmortization = (listingData) => {
       cumulative_principal_paid = monthly_principal_paid + parseFloat(result[result.length - 1]["cumulative_principal_paid"]);
       cumulative_costs = monthly_costs + parseFloat(result[result.length - 1]["cumulative_costs"]);
       home_value_after_appriciation = parseFloat(result[result.length - 1]["home_value_after_appriciation"]) * ( 1 + (listingData["home_yoy_appriciation_percent"] / 1200));
+      rent_if_rented = parseFloat(result[result.length - 1]["rent_if_rented"]) * ( 1 + (listingData["rental_yoy_appriciation_percent"] / 1200));
     }
     
     let cost_of_investment = parseFloat(cumulative_costs + cumulative_interest_paid).toFixed(2);
     let equity = (((down_payment_amount + cumulative_principal_paid) * 100) / listingData["price"])
     let equity_value = listingData["price"] * equity / 100
     let equity_value_after_appriciation = home_value_after_appriciation * equity/100
+    let net_income = equity_value_after_appriciation - cost_of_investment + rent_if_rented;
 
     let amMonthlyUnit = {
       "month_number": i + 1,
@@ -57,7 +61,8 @@ export const generateAmortization = (listingData) => {
       "value_earned": parseFloat(equity * listingData["price"] / 100).toFixed(2),
       "cumulative_costs": cumulative_costs,
       "cost_of_investment": cost_of_investment,
-      "net_income": parseFloat(parseFloat(equity_value_after_appriciation).toFixed(2) - cost_of_investment).toFixed(2)
+      "rent_if_rented": rent_if_rented,
+      "net_income": parseFloat(net_income).toFixed(2)
       
     };
 

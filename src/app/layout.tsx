@@ -1,7 +1,7 @@
 import '@/styles/globals.css'
 import { Inter } from 'next/font/google'
 import { Providers } from './providers'
-import 'semantic-ui-css/semantic.min.css'
+import CssBaseline from '@mui/material/CssBaseline'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -18,7 +18,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <Providers>{children}</Providers>
+        <Providers>
+          <CssBaseline />
+          {children}
+        </Providers>
       </body>
     </html>
   )

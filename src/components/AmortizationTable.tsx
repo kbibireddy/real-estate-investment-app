@@ -1,38 +1,17 @@
 'use client'
 
 import { useSelector } from 'react-redux'
-import { Container } from 'semantic-ui-react'
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+} from '@mui/material'
 import { RootState } from '@/store/store'
 import { calculateAmortization } from '@/utils/calculations'
-
-interface TableProps {
-  children: React.ReactNode
-  className?: string
-}
-
-const Table = ({ children, className = '' }: TableProps) => (
-  <table className={`ui celled table ${className}`}>{children}</table>
-)
-
-const TableHeader = ({ children }: { children: React.ReactNode }) => (
-  <thead>{children}</thead>
-)
-
-const TableBody = ({ children }: { children: React.ReactNode }) => (
-  <tbody>{children}</tbody>
-)
-
-const TableRow = ({ children }: { children: React.ReactNode }) => (
-  <tr>{children}</tr>
-)
-
-const TableCell = ({ children }: { children: React.ReactNode }) => (
-  <td>{children}</td>
-)
-
-const TableHeaderCell = ({ children }: { children: React.ReactNode }) => (
-  <th>{children}</th>
-)
 
 export default function AmortizationTable() {
   const investment = useSelector((state: RootState) => state.investment)
@@ -43,33 +22,43 @@ export default function AmortizationTable() {
   )
 
   return (
-    <Container>
-      <div className="overflow-x-auto">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHeaderCell>Year</TableHeaderCell>
-              <TableHeaderCell>Beginning Balance</TableHeaderCell>
-              <TableHeaderCell>Payment</TableHeaderCell>
-              <TableHeaderCell>Principal</TableHeaderCell>
-              <TableHeaderCell>Interest</TableHeaderCell>
-              <TableHeaderCell>Ending Balance</TableHeaderCell>
+    <TableContainer component={Paper} sx={{ maxHeight: 440 }}>
+      <Table stickyHeader aria-label="amortization table">
+        <TableHead>
+          <TableRow>
+            <TableCell>Year</TableCell>
+            <TableCell align="right">Beginning Balance</TableCell>
+            <TableCell align="right">Payment</TableCell>
+            <TableCell align="right">Principal</TableCell>
+            <TableCell align="right">Interest</TableCell>
+            <TableCell align="right">Ending Balance</TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {amortization.map((row, index) => (
+            <TableRow key={index}>
+              <TableCell component="th" scope="row">
+                {index + 1}
+              </TableCell>
+              <TableCell align="right">
+                ${row.beginningBalance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+              </TableCell>
+              <TableCell align="right">
+                ${row.payment.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+              </TableCell>
+              <TableCell align="right">
+                ${row.principal.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+              </TableCell>
+              <TableCell align="right">
+                ${row.interest.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+              </TableCell>
+              <TableCell align="right">
+                ${row.endingBalance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+              </TableCell>
             </TableRow>
-          </TableHeader>
-          <TableBody>
-            {amortization.map((row, index) => (
-              <TableRow key={index}>
-                <TableCell>{index + 1}</TableCell>
-                <TableCell>${row.beginningBalance.toFixed(2)}</TableCell>
-                <TableCell>${row.payment.toFixed(2)}</TableCell>
-                <TableCell>${row.principal.toFixed(2)}</TableCell>
-                <TableCell>${row.interest.toFixed(2)}</TableCell>
-                <TableCell>${row.endingBalance.toFixed(2)}</TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </div>
-    </Container>
+          ))}
+        </TableBody>
+      </Table>
+    </TableContainer>
   )
 } 

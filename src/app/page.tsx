@@ -1,102 +1,66 @@
 'use client'
 
 import { useState } from 'react'
+import { Container, Grid, Paper, Tabs, Tab, Typography, Box } from '@mui/material'
 import ControlPanel from '@/components/ControlPanel'
 import AmortizationTable from '@/components/AmortizationTable'
-import ReLineChart from '@/components/charts/ReLineChart'
+import ChartPanel from '@/components/ChartPanel'
+import TabPanel from '@/components/common/TabPanel'
 
 export default function Home() {
-  const [activeTab, setActiveTab] = useState<'table' | 'charts'>('table')
+  const [tabValue, setTabValue] = useState(0)
+
+  const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => {
+    setTabValue(newValue)
+  }
 
   return (
-    <main className="min-h-screen p-4">
-      <div className="ui container">
-        <h1 className="text-3xl font-bold text-center mb-8">
-          Real Estate Investment Analysis Tool
-        </h1>
-        
-        <div className="ui grid">
-          {/* Left Panel - Control Panel */}
-          <div className="five wide column">
-            <div className="ui segment">
-              <ControlPanel />
-            </div>
-          </div>
+    <Container maxWidth="xl" sx={{ py: 4 }}>
+      <Typography variant="h3" component="h1" align="center" gutterBottom sx={{ mb: 4 }}>
+        Real Estate Investment Analysis Tool
+      </Typography>
+      
+      <Grid container spacing={3}>
+        {/* Left Panel - Control Panel */}
+        <Grid item xs={12} md={4}>
+          <Paper elevation={3} sx={{ height: '100%' }}>
+            <ControlPanel />
+          </Paper>
+        </Grid>
 
-          {/* Right Panel - Tabs */}
-          <div className="eleven wide column">
-            <div className="ui top attached tabular menu">
-              <a 
-                className={`item ${activeTab === 'table' ? 'active' : ''}`}
-                onClick={() => setActiveTab('table')}
+        {/* Right Panel - Tabs */}
+        <Grid item xs={12} md={8}>
+          <Paper elevation={3}>
+            <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+              <Tabs 
+                value={tabValue} 
+                onChange={handleTabChange} 
+                aria-label="analysis tabs"
+                variant="fullWidth"
               >
-                Amortization Table
-              </a>
-              <a 
-                className={`item ${activeTab === 'charts' ? 'active' : ''}`}
-                onClick={() => setActiveTab('charts')}
-              >
-                Charts
-              </a>
-            </div>
+                <Tab 
+                  label="Amortization Table" 
+                  id="tab-0" 
+                  aria-controls="tabpanel-0"
+                />
+                <Tab 
+                  label="Charts" 
+                  id="tab-1" 
+                  aria-controls="tabpanel-1"
+                />
+              </Tabs>
+            </Box>
             
-            <div className="ui bottom attached segment">
-              {activeTab === 'table' ? (
-                <AmortizationTable />
-              ) : (
-                <div className="ui grid">
-                  <div className="row">
-                    <div className="column">
-                      <h3 className="ui header">Net Income</h3>
-                      <ReLineChart domain={[0, 2000000]} items={["net_income"]} />
-                    </div>
-                  </div>
-                  <div className="row">
-                    <div className="column">
-                      <h3 className="ui header">Investment Value & Equity</h3>
-                      <ReLineChart
-                        domain={[0, 2500000]}
-                        items={["cost_of_investment", "equity_value_after_appriciation"]}
-                      />
-                    </div>
-                  </div>
-                  <div className="row">
-                    <div className="column">
-                      <h3 className="ui header">Rental Income</h3>
-                      <ReLineChart items={["rent_if_rented"]} />
-                    </div>
-                  </div>
-                  <div className="row">
-                    <div className="column">
-                      <h3 className="ui header">Loan Analysis</h3>
-                      <ReLineChart
-                        items={[
-                          "outstanding_loan_amount",
-                          "cumulative_interest_paid",
-                          "cumulative_principal_paid",
-                          "cost_of_investment",
-                        ]}
-                      />
-                    </div>
-                  </div>
-                  <div className="row">
-                    <div className="column">
-                      <h3 className="ui header">Equity Growth</h3>
-                      <ReLineChart items={["equity"]} />
-                    </div>
-                  </div>
-                  <div className="row">
-                    <div className="column">
-                      <h3 className="ui header">Total Value Earned</h3>
-                      <ReLineChart items={["value_earned"]} />
-                    </div>
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-      </div>
-    </main>
+            <TabPanel value={tabValue} index={0}>
+              <AmortizationTable />
+            </TabPanel>
+            
+            <TabPanel value={tabValue} index={1}>
+              <ChartPanel />
+            </TabPanel>
+          </Paper>
+        </Grid>
+      </Grid>
+    </Container>
   )
 }

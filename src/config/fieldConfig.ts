@@ -3,13 +3,14 @@ export interface FieldConfig {
   max: number
   default: number
   step: number
+  increment: number
   label: string
   prefix?: string
   suffix: string
   description?: string
 }
 
-export interface FieldsConfiguration {
+export type FieldsConfiguration = {
   [key: string]: FieldConfig
 }
 
@@ -19,6 +20,7 @@ export const fieldConfig: FieldsConfiguration = {
     max: 10000000,
     default: 500000,
     step: 1000,
+    increment: 10000,
     label: 'Property Value',
     prefix: '$',
     suffix: '',
@@ -29,6 +31,7 @@ export const fieldConfig: FieldsConfiguration = {
     max: 10000000,
     default: 100000,
     step: 1000,
+    increment: 5000,
     label: 'Down Payment',
     prefix: '$',
     suffix: '',
@@ -39,6 +42,7 @@ export const fieldConfig: FieldsConfiguration = {
     max: 20,
     default: 4.5,
     step: 0.1,
+    increment: 0.25,
     label: 'Interest Rate',
     prefix: '',
     suffix: '%',
@@ -49,6 +53,7 @@ export const fieldConfig: FieldsConfiguration = {
     max: 40,
     default: 30,
     step: 1,
+    increment: 5,
     label: 'Loan Term',
     prefix: '',
     suffix: ' years',
@@ -59,6 +64,7 @@ export const fieldConfig: FieldsConfiguration = {
     max: 100000,
     default: 2500,
     step: 100,
+    increment: 250,
     label: 'Monthly Rent',
     prefix: '$',
     suffix: '/month',
@@ -69,6 +75,7 @@ export const fieldConfig: FieldsConfiguration = {
     max: 100000,
     default: 2500,
     step: 100,
+    increment: 500,
     label: 'Property Tax',
     prefix: '$',
     suffix: '/year',
@@ -79,6 +86,7 @@ export const fieldConfig: FieldsConfiguration = {
     max: 10000,
     default: 1200,
     step: 100,
+    increment: 200,
     label: 'Insurance',
     prefix: '$',
     suffix: '/year',
@@ -89,6 +97,7 @@ export const fieldConfig: FieldsConfiguration = {
     max: 50000,
     default: 2400,
     step: 100,
+    increment: 500,
     label: 'Maintenance',
     prefix: '$',
     suffix: '/year',
@@ -99,6 +108,7 @@ export const fieldConfig: FieldsConfiguration = {
     max: 20,
     default: 3,
     step: 0.1,
+    increment: 0.5,
     label: 'Appreciation Rate',
     prefix: '',
     suffix: '%',
@@ -109,6 +119,7 @@ export const fieldConfig: FieldsConfiguration = {
     max: 20,
     default: 2,
     step: 0.1,
+    increment: 0.5,
     label: 'Rent Increase',
     prefix: '',
     suffix: '%/year',
@@ -119,6 +130,7 @@ export const fieldConfig: FieldsConfiguration = {
     max: 10000,
     default: 0,
     step: 100,
+    increment: 250,
     label: 'HOA Fees',
     prefix: '$',
     suffix: '/year',
@@ -129,6 +141,7 @@ export const fieldConfig: FieldsConfiguration = {
     max: 100000,
     default: 0,
     step: 100,
+    increment: 1000,
     label: 'Closing Costs',
     prefix: '$',
     suffix: '',

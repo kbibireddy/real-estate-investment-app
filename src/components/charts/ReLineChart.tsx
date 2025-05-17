@@ -33,6 +33,21 @@ const formatValue = (value: number) => {
   })}`
 }
 
+const CHART_LABELS = {
+  net_income: 'Net Income',
+  cost_of_investment: 'Investment Cost',
+  equity_value_after_appriciation: 'Future Value',
+  rent_if_rented: 'Rental Income',
+  outstanding_loan_amount: 'Loan Balance',
+  cumulative_interest_paid: 'Total Interest',
+  cumulative_principal_paid: 'Total Principal',
+  equity: 'Equity',
+  value_earned: 'Value Earned',
+  propertyTax: 'Property Tax',
+  insurance: 'Insurance',
+  maintenance: 'Maintenance'
+}
+
 export default function ReLineChart({ items, domain }: ReLineChartProps) {
   const investment = useSelector((state: RootState) => state.investment)
 
@@ -94,6 +109,10 @@ export default function ReLineChart({ items, domain }: ReLineChartProps) {
               (investment.rentIncrease / 100)
             data[item] = futureValue + rentIncome - investment.propertyValue
             break
+          default:
+            if (investment[item as keyof typeof investment]) {
+              data[item] = investment[item as keyof typeof investment]
+            }
         }
       })
 
@@ -104,75 +123,74 @@ export default function ReLineChart({ items, domain }: ReLineChartProps) {
   const data = generateChartData()
 
   return (
-    <div className="ui container">
-      <div style={{ width: '100%', height: 400 }}>
-        <ResponsiveContainer>
-          <LineChart data={data} margin={{ top: 20, right: 30, left: 20, bottom: 20 }}>
-            <XAxis 
-              dataKey="year"
-              stroke="#8892b0"
-              tick={{ fill: '#8892b0' }}
-            >
-              <Label
-                value="Years"
-                position="bottom"
-                offset={0}
-                fill="#8892b0"
-              />
-            </XAxis>
-            <YAxis 
-              domain={domain || ['auto', 'auto']}
-              stroke="#8892b0"
-              tick={{ fill: '#8892b0' }}
-              tickFormatter={formatValue}
-            >
-              <Label
-                value="Value ($)"
-                angle={-90}
-                position="left"
-                offset={0}
-                fill="#8892b0"
-              />
-            </YAxis>
-            <Tooltip 
-              formatter={(value: number) => formatValue(value)}
-              contentStyle={{
-                backgroundColor: '#0d2140',
-                border: 'none',
-                borderRadius: '4px',
-                color: '#e6edf7'
-              }}
+    <div style={{ width: '100%', height: 400 }}>
+      <ResponsiveContainer>
+        <LineChart 
+          data={data} 
+          margin={{ top: 30, right: 30, left: 20, bottom: 20 }}
+        >
+          <XAxis 
+            dataKey="year"
+            stroke="#8892b0"
+            tick={{ fill: '#8892b0' }}
+          >
+            <Label
+              value="Years"
+              position="bottom"
+              offset={0}
+              fill="#8892b0"
             />
-            <Legend 
-              verticalAlign="top"
-              wrapperStyle={{
-                paddingBottom: '20px',
-                color: '#e6edf7'
-              }}
+          </XAxis>
+          <YAxis 
+            domain={domain || ['auto', 'auto']}
+            stroke="#8892b0"
+            tick={{ fill: '#8892b0' }}
+            tickFormatter={formatValue}
+          >
+            <Label
+              value="Value ($)"
+              angle={-90}
+              position="left"
+              offset={0}
+              fill="#8892b0"
             />
-            {items.map((item, index) => (
-              <Line
-                key={item}
-                type="monotone"
-                dataKey={item}
-                stroke={COLORS[index % COLORS.length]}
-                strokeWidth={2}
-                dot={false}
-                label={{
-                  fill: COLORS[index % COLORS.length],
-                  fontSize: 12,
-                  position: 'top',
-                  formatter: (value: any) => {
-                    // Only show label every 5 years
-                    const year = value.payload.year
-                    return year % 5 === 0 ? formatValue(value.value) : ''
-                  }
-                }}
-              />
-            ))}
-          </LineChart>
-        </ResponsiveContainer>
-      </div>
+          </YAxis>
+          <Tooltip 
+            formatter={(value: number, name: string) => [
+              formatValue(value),
+              CHART_LABELS[name as keyof typeof CHART_LABELS] || name
+            ]}
+            contentStyle={{
+              backgroundColor: '#0d2140',
+              border: 'none',
+              borderRadius: '4px',
+              color: '#e6edf7'
+            }}
+          />
+          <Legend 
+            formatter={(value: string) => 
+              CHART_LABELS[value as keyof typeof CHART_LABELS] || value
+            }
+            verticalAlign="top"
+            wrapperStyle={{
+              paddingBottom: '20px',
+              color: '#e6edf7'
+            }}
+          />
+          {items.map((item, index) => (
+            <Line
+              key={item}
+              type="monotone"
+              dataKey={item}
+              name={item}
+              stroke={COLORS[index % COLORS.length]}
+              strokeWidth={2}
+              dot={{ r: 0 }}
+              activeDot={{ r: 6, fill: COLORS[index % COLORS.length] }}
+            />
+          ))}
+        </LineChart>
+      </ResponsiveContainer>
     </div>
   )
 } 

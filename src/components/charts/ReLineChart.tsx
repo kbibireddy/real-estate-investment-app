@@ -6,10 +6,10 @@ import {
   Line,
   XAxis,
   YAxis,
-  CartesianGrid,
   Tooltip,
   Legend,
   ResponsiveContainer,
+  Label
 } from 'recharts'
 import { RootState } from '@/store/store'
 import { calculateAmortization, calculateFutureValue } from '@/utils/calculations'
@@ -24,7 +24,14 @@ interface ChartData {
   [key: string]: number
 }
 
-const COLORS = ['#8884d8', '#82ca9d', '#ffc658', '#ff7300', '#00C49F']
+const COLORS = ['#64ffda', '#8892b0', '#e6edf7', '#0d2140', '#05101f']
+
+const formatValue = (value: number) => {
+  return `$${value.toLocaleString(undefined, {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0
+  })}`
+}
 
 export default function ReLineChart({ items, domain }: ReLineChartProps) {
   const investment = useSelector((state: RootState) => state.investment)
@@ -100,19 +107,67 @@ export default function ReLineChart({ items, domain }: ReLineChartProps) {
     <div className="ui container">
       <div style={{ width: '100%', height: 400 }}>
         <ResponsiveContainer>
-          <LineChart data={data}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="year" />
-            <YAxis domain={domain || ['auto', 'auto']} />
-            <Tooltip formatter={(value: number) => `$${value.toFixed(2)}`} />
-            <Legend />
+          <LineChart data={data} margin={{ top: 20, right: 30, left: 20, bottom: 20 }}>
+            <XAxis 
+              dataKey="year"
+              stroke="#8892b0"
+              tick={{ fill: '#8892b0' }}
+            >
+              <Label
+                value="Years"
+                position="bottom"
+                offset={0}
+                fill="#8892b0"
+              />
+            </XAxis>
+            <YAxis 
+              domain={domain || ['auto', 'auto']}
+              stroke="#8892b0"
+              tick={{ fill: '#8892b0' }}
+              tickFormatter={formatValue}
+            >
+              <Label
+                value="Value ($)"
+                angle={-90}
+                position="left"
+                offset={0}
+                fill="#8892b0"
+              />
+            </YAxis>
+            <Tooltip 
+              formatter={(value: number) => formatValue(value)}
+              contentStyle={{
+                backgroundColor: '#0d2140',
+                border: 'none',
+                borderRadius: '4px',
+                color: '#e6edf7'
+              }}
+            />
+            <Legend 
+              verticalAlign="top"
+              wrapperStyle={{
+                paddingBottom: '20px',
+                color: '#e6edf7'
+              }}
+            />
             {items.map((item, index) => (
               <Line
                 key={item}
                 type="monotone"
                 dataKey={item}
                 stroke={COLORS[index % COLORS.length]}
+                strokeWidth={2}
                 dot={false}
+                label={{
+                  fill: COLORS[index % COLORS.length],
+                  fontSize: 12,
+                  position: 'top',
+                  formatter: (value: any) => {
+                    // Only show label every 5 years
+                    const year = value.payload.year
+                    return year % 5 === 0 ? formatValue(value.value) : ''
+                  }
+                }}
               />
             ))}
           </LineChart>

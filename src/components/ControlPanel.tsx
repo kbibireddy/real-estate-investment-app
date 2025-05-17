@@ -1,7 +1,7 @@
 'use client'
 
 import { useDispatch, useSelector } from 'react-redux'
-import { Box, Paper, Typography, Divider } from '@mui/material'
+import { Box, Paper, Typography, Divider, Grid } from '@mui/material'
 import { RootState } from '@/store/store'
 import { fieldConfig } from '@/config/fieldConfig'
 import NumberInput from './common/NumberInput'
@@ -20,24 +20,16 @@ import {
 
 const sections = [
   {
-    title: 'Property Details',
-    fields: ['propertyValue', 'downPayment']
+    title: 'Property',
+    fields: ['propertyValue', 'downPayment', 'interestRate', 'loanTerm']
   },
   {
-    title: 'Loan Details',
-    fields: ['interestRate', 'loanTerm']
-  },
-  {
-    title: 'Rental Income',
-    fields: ['monthlyRent', 'rentIncrease']
+    title: 'Income & Growth',
+    fields: ['monthlyRent', 'rentIncrease', 'appreciation']
   },
   {
     title: 'Expenses',
     fields: ['propertyTax', 'insurance', 'maintenance']
-  },
-  {
-    title: 'Appreciation',
-    fields: ['appreciation']
   }
 ]
 
@@ -62,28 +54,32 @@ export default function ControlPanel() {
   }
 
   return (
-    <Paper elevation={2} sx={{ p: 2 }}>
+    <Box sx={{ p: 2 }}>
       {sections.map((section, index) => (
-        <Box key={section.title} sx={{ mb: index < sections.length - 1 ? 3 : 0 }}>
-          <Typography variant="h6" gutterBottom>
+        <Box key={section.title} sx={{ mb: index < sections.length - 1 ? 2 : 0 }}>
+          <Typography variant="subtitle1" sx={{ fontWeight: 'bold', mb: 1 }}>
             {section.title}
           </Typography>
-          <Divider sx={{ mb: 2 }} />
-          {section.fields.map((fieldName) => {
-            const config = fieldConfig[fieldName]
-            const value = investment[fieldName as keyof typeof investment]
-            return (
-              <NumberInput
-                key={fieldName}
-                id={fieldName}
-                value={value}
-                onChange={getDispatchFunction(fieldName)}
-                {...config}
-              />
-            )
-          })}
+          <Grid container spacing={2}>
+            {section.fields.map((fieldName) => {
+              const config = fieldConfig[fieldName]
+              const value = investment[fieldName as keyof typeof investment]
+              return (
+                <Grid item xs={12} key={fieldName}>
+                  <NumberInput
+                    id={fieldName}
+                    value={value}
+                    onChange={getDispatchFunction(fieldName)}
+                    {...config}
+                    compact={true}
+                  />
+                </Grid>
+              )
+            })}
+          </Grid>
+          {index < sections.length - 1 && <Divider sx={{ mt: 2 }} />}
         </Box>
       ))}
-    </Paper>
+    </Box>
   )
 } 

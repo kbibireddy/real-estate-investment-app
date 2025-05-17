@@ -8,6 +8,7 @@ interface NumberInputProps extends FieldConfig {
   value: number
   onChange: (value: number) => void
   id: string
+  compact?: boolean
 }
 
 export default function NumberInput({
@@ -20,7 +21,8 @@ export default function NumberInput({
   prefix,
   suffix,
   description,
-  id
+  id,
+  compact = false
 }: NumberInputProps) {
   const formatValue = (value: number) => {
     return `${prefix || ''}${value.toLocaleString(undefined, {
@@ -30,18 +32,38 @@ export default function NumberInput({
   }
 
   return (
-    <Box sx={{ width: '100%', mb: 3 }}>
-      <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-        <Typography variant="subtitle1" sx={{ mr: 1 }}>
-          {label}
+    <Box sx={{ width: '100%', mb: compact ? 0 : 3 }}>
+      <Box sx={{ 
+        display: 'flex', 
+        alignItems: 'center', 
+        mb: 0.5,
+        justifyContent: 'space-between'
+      }}>
+        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+          <Typography 
+            variant={compact ? "body2" : "subtitle1"} 
+            sx={{ mr: 1 }}
+          >
+            {label}
+          </Typography>
+          {description && (
+            <Tooltip title={description} placement="top">
+              <InfoOutlinedIcon
+                sx={{ 
+                  fontSize: compact ? 14 : 16, 
+                  cursor: 'pointer', 
+                  color: 'primary.main' 
+                }}
+              />
+            </Tooltip>
+          )}
+        </Box>
+        <Typography 
+          variant={compact ? "body2" : "body1"}
+          sx={{ color: 'text.secondary' }}
+        >
+          {formatValue(value)}
         </Typography>
-        {description && (
-          <Tooltip title={description} placement="top">
-            <InfoOutlinedIcon
-              sx={{ fontSize: 16, cursor: 'pointer', color: 'primary.main' }}
-            />
-          </Tooltip>
-        )}
       </Box>
       <Box sx={{ px: 1 }}>
         <Slider
@@ -60,29 +82,28 @@ export default function NumberInput({
           sx={{
             '& .MuiSlider-markLabel': {
               color: 'text.secondary',
-              fontSize: { xs: '0.75rem', sm: '0.875rem' },
+              fontSize: compact ? '0.75rem' : '0.875rem',
             },
             '& .MuiSlider-valueLabel': {
               backgroundColor: 'primary.main',
               color: 'background.paper',
-              fontSize: { xs: '0.75rem', sm: '0.875rem' },
+              fontSize: compact ? '0.75rem' : '0.875rem',
               padding: '0.5rem',
               borderRadius: '4px',
+            },
+            '& .MuiSlider-thumb': {
+              width: compact ? 16 : 20,
+              height: compact ? 16 : 20,
+            },
+            '& .MuiSlider-track': {
+              height: compact ? 4 : 6,
+            },
+            '& .MuiSlider-rail': {
+              height: compact ? 4 : 6,
             },
           }}
         />
       </Box>
-      <Typography 
-        variant="body2" 
-        align="center" 
-        sx={{ 
-          mt: 1,
-          color: 'text.secondary',
-          fontSize: { xs: '0.875rem', sm: '1rem' }
-        }}
-      >
-        Current: {formatValue(value)}
-      </Typography>
     </Box>
   )
 } 

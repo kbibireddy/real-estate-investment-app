@@ -22,14 +22,21 @@ export default function Home() {
       
       <Grid container spacing={3}>
         {/* Left Panel - Control Panel */}
-        <Grid item xs={12} md={4}>
-          <Paper elevation={3} sx={{ height: '100%' }}>
+        <Grid item xs={12} md={3}>
+          <Paper 
+            elevation={3} 
+            sx={{ 
+              height: '100%',
+              maxWidth: { md: 320 },
+              mx: { md: 'auto' }
+            }}
+          >
             <ControlPanel />
           </Paper>
         </Grid>
 
         {/* Right Panel - Tabs */}
-        <Grid item xs={12} md={8}>
+        <Grid item xs={12} md={9}>
           <Paper elevation={3}>
             <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
               <Tabs 

@@ -1,16 +1,23 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: [
-    './src/pages/**/*.{js,ts,jsx,tsx,mdx}',
-    './src/components/**/*.{js,ts,jsx,tsx,mdx}',
-    './src/app/**/*.{js,ts,jsx,tsx,mdx}',
+    './src/components/**/*.{js,ts,jsx,tsx}',
+    './src/app/**/*.{js,ts,jsx,tsx}',
   ],
   theme: {
-    extend: {},
+    extend: {
+      colors: {
+        primary: '#64ffda',
+        background: {
+          start: '#0a192f',
+          end: '#112240',
+        },
+        text: {
+          primary: '#ccd6f6',
+          secondary: '#8892b0',
+        },
+      },
+    },
   },
   plugins: [],
-  // Important to prevent conflicts with Semantic UI
-  corePlugins: {
-    preflight: false,
-  },
 } 

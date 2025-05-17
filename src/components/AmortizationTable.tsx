@@ -13,6 +13,21 @@ import {
 import { RootState } from '@/store/store'
 import { calculateAmortization } from '@/utils/calculations'
 
+interface AmortizationRow {
+  beginningBalance: number
+  payment: number
+  principal: number
+  interest: number
+  endingBalance: number
+}
+
+const formatCurrency = (value: number): string => {
+  return value.toLocaleString(undefined, { 
+    minimumFractionDigits: 2, 
+    maximumFractionDigits: 2 
+  })
+}
+
 export default function AmortizationTable() {
   const investment = useSelector((state: RootState) => state.investment)
   const amortization = calculateAmortization(
@@ -22,7 +37,24 @@ export default function AmortizationTable() {
   )
 
   return (
-    <TableContainer component={Paper} sx={{ maxHeight: 440 }}>
+    <TableContainer 
+      component={Paper} 
+      sx={{ 
+        maxHeight: 440,
+        '& .MuiTableHead-root': {
+          position: 'sticky',
+          top: 0,
+          zIndex: 1,
+          backgroundColor: 'background.paper',
+        },
+        '& .MuiTableCell-stickyHeader': {
+          backgroundColor: 'background.paper',
+          borderBottom: '2px solid',
+          borderColor: 'divider',
+          fontWeight: 'bold',
+        }
+      }}
+    >
       <Table stickyHeader aria-label="amortization table">
         <TableHead>
           <TableRow>
@@ -35,25 +67,25 @@ export default function AmortizationTable() {
           </TableRow>
         </TableHead>
         <TableBody>
-          {amortization.map((row, index) => (
+          {amortization.map((row: AmortizationRow, index: number) => (
             <TableRow key={index}>
               <TableCell component="th" scope="row">
                 {index + 1}
               </TableCell>
               <TableCell align="right">
-                ${row.beginningBalance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                ${formatCurrency(row.beginningBalance)}
               </TableCell>
               <TableCell align="right">
-                ${row.payment.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                ${formatCurrency(row.payment)}
               </TableCell>
               <TableCell align="right">
-                ${row.principal.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                ${formatCurrency(row.principal)}
               </TableCell>
               <TableCell align="right">
-                ${row.interest.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                ${formatCurrency(row.interest)}
               </TableCell>
               <TableCell align="right">
-                ${row.endingBalance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                ${formatCurrency(row.endingBalance)}
               </TableCell>
             </TableRow>
           ))}

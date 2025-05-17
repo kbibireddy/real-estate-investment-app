@@ -16,12 +16,14 @@ import {
   updateMaintenance,
   updateAppreciation,
   updateRentIncrease,
+  updateHOA,
+  updateClosingCosts,
 } from '@/store/slices/investmentSlice'
 
 const sections = [
   {
     title: 'Property',
-    fields: ['propertyValue', 'downPayment', 'interestRate', 'loanTerm']
+    fields: ['propertyValue', 'downPayment', 'interestRate', 'loanTerm', 'closingCosts']
   },
   {
     title: 'Income & Growth',
@@ -29,7 +31,7 @@ const sections = [
   },
   {
     title: 'Expenses',
-    fields: ['propertyTax', 'insurance', 'maintenance']
+    fields: ['propertyTax', 'insurance', 'maintenance', 'hoa']
   }
 ]
 
@@ -48,7 +50,9 @@ export default function ControlPanel() {
       insurance: (value) => dispatch(updateInsurance(value)),
       maintenance: (value) => dispatch(updateMaintenance(value)),
       appreciation: (value) => dispatch(updateAppreciation(value)),
-      rentIncrease: (value) => dispatch(updateRentIncrease(value))
+      rentIncrease: (value) => dispatch(updateRentIncrease(value)),
+      hoa: (value) => dispatch(updateHOA(value)),
+      closingCosts: (value) => dispatch(updateClosingCosts(value))
     }
     return dispatchMap[fieldName]
   }

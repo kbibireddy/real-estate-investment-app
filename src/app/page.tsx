@@ -22,13 +22,22 @@ export default function Home() {
       
       <Grid container spacing={3}>
         {/* Left Panel - Control Panel */}
-        <Grid item xs={12} md={3}>
+        <Grid 
+          item 
+          xs={12} 
+          md={3} 
+          sx={{
+            position: { md: 'sticky' },
+            top: { md: 16 },
+            height: { md: 'fit-content' },
+            alignSelf: { md: 'flex-start' }
+          }}
+        >
           <Paper 
             elevation={3} 
             sx={{ 
-              height: '100%',
               maxWidth: { md: 320 },
-              mx: { md: 'auto' }
+              mx: { md: 'auto' },
             }}
           >
             <ControlPanel />

@@ -11,19 +11,23 @@ interface InvestmentState {
   maintenance: number
   appreciation: number
   rentIncrease: number
+  hoa: number
+  closingCosts: number
 }
 
 const initialState: InvestmentState = {
   propertyValue: 500000,
   downPayment: 100000,
-  interestRate: 4.5,
+  interestRate: 6.5,
   loanTerm: 30,
-  monthlyRent: 2500,
-  propertyTax: 2500,
+  monthlyRent: 3000,
+  propertyTax: 6000,
   insurance: 1200,
   maintenance: 2400,
   appreciation: 3,
-  rentIncrease: 2
+  rentIncrease: 2,
+  hoa: 0,
+  closingCosts: 0
 }
 
 export const investmentSlice = createSlice({
@@ -59,6 +63,12 @@ export const investmentSlice = createSlice({
     },
     updateRentIncrease: (state, action: PayloadAction<number>) => {
       state.rentIncrease = action.payload
+    },
+    updateHOA: (state, action: PayloadAction<number>) => {
+      state.hoa = action.payload
+    },
+    updateClosingCosts: (state, action: PayloadAction<number>) => {
+      state.closingCosts = action.payload
     }
   }
 })
@@ -73,7 +83,9 @@ export const {
   updateInsurance,
   updateMaintenance,
   updateAppreciation,
-  updateRentIncrease
+  updateRentIncrease,
+  updateHOA,
+  updateClosingCosts
 } = investmentSlice.actions
 
 export default investmentSlice.reducer 

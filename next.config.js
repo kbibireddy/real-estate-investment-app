@@ -15,7 +15,8 @@ const nextConfig = {
   // Suppress specific React warnings
   reactStrictMode: false,
   output: 'export',
-  basePath: '/real-estate-investment-app',
+  // Only use basePath in production (GitHub Pages)
+  basePath: process.env.NODE_ENV === 'production' ? '/real-estate-investment-app' : '',
   images: {
     unoptimized: true,
   },

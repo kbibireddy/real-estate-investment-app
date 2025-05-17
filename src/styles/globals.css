@@ -1,0 +1,76 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --foreground-rgb: 0, 0, 0;
+  --background-rgb: 255, 255, 255;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --foreground-rgb: 255, 255, 255;
+    --background-rgb: 0, 0, 0;
+  }
+}
+
+body {
+  color: rgb(var(--foreground-rgb));
+  background: rgb(var(--background-rgb));
+}
+
+/* Override Semantic UI container width for better responsiveness */
+.ui.container {
+  width: 100% !important;
+  max-width: 1200px !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  padding-left: 1rem !important;
+  padding-right: 1rem !important;
+}
+
+/* Custom styles for form inputs */
+.ui.form input[type="number"] {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+/* Table styles */
+.ui.table {
+  width: 100%;
+  background: #fff;
+  margin: 1em 0;
+  border: 1px solid rgba(34,36,38,.15);
+  border-radius: .28571429rem;
+  color: rgba(0,0,0,.87);
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.ui.table th,
+.ui.table td {
+  padding: .78571429em;
+  text-align: left;
+  border-left: 1px solid rgba(34,36,38,.1);
+  border-bottom: 1px solid rgba(34,36,38,.1);
+}
+
+.ui.table th {
+  background: #f9fafb;
+  font-weight: bold;
+}
+
+.ui.table tr:first-child th:first-child {
+  border-radius: .28571429rem 0 0 0;
+}
+
+.ui.table tr:first-child th:last-child {
+  border-radius: 0 .28571429rem 0 0;
+}
+
+/* Chart container styles */
+.recharts-wrapper {
+  margin: 0 auto;
+} 

@@ -10,6 +10,7 @@ interface AmortizationRow {
   cumulativePrincipal: number
   cumulativeExpenses: number
   totalInvestmentCost: number
+  appreciatedValue: number
 }
 
 export function calculateAmortization(
@@ -19,7 +20,9 @@ export function calculateAmortization(
   propertyTax: number,
   insurance: number,
   hoa: number,
-  closingCosts: number
+  closingCosts: number,
+  propertyValue: number,
+  appreciationRate: number
 ): AmortizationRow[] {
   const monthlyInterestRate = annualInterestRate / 100 / 12
   const numberOfPayments = loanTermYears * 12
@@ -31,9 +34,10 @@ export function calculateAmortization(
   let balance = loanAmount
   let cumulativePayment = 0
   let cumulativeInterest = 0
-  let cumulativePrincipal = 0
+  let cumulativePrincipal = propertyValue - loanAmount // Start with down payment
   const startDate = new Date()
   const annualExpenses = propertyTax + insurance + hoa
+  let cumulativeExpenses = closingCosts // Start with closing costs
 
   for (let year = 1; year <= loanTermYears; year++) {
     let yearlyPrincipal = 0
@@ -55,8 +59,9 @@ export function calculateAmortization(
     cumulativePayment += yearlyPrincipal + yearlyInterest
     cumulativeInterest += yearlyInterest
     cumulativePrincipal += yearlyPrincipal
-    const cumulativeExpenses = (annualExpenses * year)
-    const totalInvestmentCost = closingCosts + cumulativePayment + cumulativeExpenses
+    cumulativeExpenses += annualExpenses
+    const totalInvestmentCost = cumulativePrincipal
+    const appreciatedValue = totalInvestmentCost * Math.pow(1 + appreciationRate / 100, year)
 
     amortization.push({
       date: yearDate,
@@ -69,64 +74,8 @@ export function calculateAmortization(
       cumulativeInterest,
       cumulativePrincipal,
       cumulativeExpenses,
-      totalInvestmentCost
-    })
-  }
-
-  return amortization
-}
-
-export function calculateMonthlyAmortization(
-  loanAmount: number,
-  annualInterestRate: number,
-  loanTermYears: number,
-  propertyTax: number,
-  insurance: number,
-  hoa: number,
-  closingCosts: number
-): AmortizationRow[] {
-  const monthlyInterestRate = annualInterestRate / 100 / 12
-  const numberOfPayments = loanTermYears * 12
-  const monthlyPayment =
-    (loanAmount * monthlyInterestRate * Math.pow(1 + monthlyInterestRate, numberOfPayments)) /
-    (Math.pow(1 + monthlyInterestRate, numberOfPayments) - 1)
-
-  const amortization: AmortizationRow[] = []
-  let balance = loanAmount
-  let cumulativePayment = 0
-  let cumulativeInterest = 0
-  let cumulativePrincipal = 0
-  const startDate = new Date()
-  const monthlyExpenses = (propertyTax + insurance + hoa) / 12
-
-  for (let month = 1; month <= numberOfPayments; month++) {
-    const beginningBalance = balance
-    const interestPayment = balance * monthlyInterestRate
-    const principalPayment = monthlyPayment - interestPayment
-    
-    balance -= principalPayment
-    cumulativePayment += monthlyPayment
-    cumulativeInterest += interestPayment
-    cumulativePrincipal += principalPayment
-
-    const currentDate = new Date(startDate)
-    currentDate.setMonth(startDate.getMonth() + (month - 1))
-    
-    const cumulativeExpenses = (monthlyExpenses * month)
-    const totalInvestmentCost = closingCosts + cumulativePayment + cumulativeExpenses
-
-    amortization.push({
-      date: currentDate,
-      beginningBalance,
-      payment: monthlyPayment,
-      principal: principalPayment,
-      interest: interestPayment,
-      endingBalance: balance,
-      cumulativePayment,
-      cumulativeInterest,
-      cumulativePrincipal,
-      cumulativeExpenses,
-      totalInvestmentCost
+      totalInvestmentCost,
+      appreciatedValue
     })
   }
 

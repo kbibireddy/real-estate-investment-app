@@ -21,31 +21,22 @@ export default function Home() {
       </Typography>
       
       <Grid container spacing={3}>
-        {/* Left Panel - Control Panel */}
-        <Grid 
-          item 
-          xs={12} 
-          md={3} 
-          sx={{
-            position: { md: 'sticky' },
-            top: { md: 16 },
-            height: { md: 'fit-content' },
-            alignSelf: { md: 'flex-start' }
-          }}
-        >
+        {/* Top Panel - Control Panel */}
+        <Grid item xs={12}>
           <Paper 
             elevation={3} 
             sx={{ 
-              maxWidth: { md: 320 },
-              mx: { md: 'auto' },
+              mb: 3,
+              backgroundColor: 'background.paper',
+              backgroundImage: 'none'
             }}
           >
             <ControlPanel />
           </Paper>
         </Grid>
 
-        {/* Right Panel - Tabs */}
-        <Grid item xs={12} md={9}>
+        {/* Analysis Panel - Tabs */}
+        <Grid item xs={12}>
           <Paper elevation={3}>
             <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
               <Tabs 

@@ -18,8 +18,8 @@ export const fieldConfig: FieldsConfiguration = {
   propertyValue: {
     min: 0,
     max: 10000000,
-    default: 500000,
-    step: 1000,
+    default: 1000000,
+    step: 10000,
     increment: 10000,
     label: 'Property Value',
     prefix: '$',
@@ -29,8 +29,8 @@ export const fieldConfig: FieldsConfiguration = {
   downPayment: {
     min: 0,
     max: 10000000,
-    default: 100000,
-    step: 1000,
+    default: 200000,
+    step: 10000,
     increment: 5000,
     label: 'Down Payment',
     prefix: '$',
@@ -40,7 +40,7 @@ export const fieldConfig: FieldsConfiguration = {
   interestRate: {
     min: 0,
     max: 20,
-    default: 4.5,
+    default: 6.5,
     step: 0.1,
     increment: 0.25,
     label: 'Interest Rate',

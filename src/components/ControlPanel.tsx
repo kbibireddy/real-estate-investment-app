@@ -58,32 +58,51 @@ export default function ControlPanel() {
   }
 
   return (
-    <Box sx={{ p: 2 }}>
-      {sections.map((section, index) => (
-        <Box key={section.title} sx={{ mb: index < sections.length - 1 ? 2 : 0 }}>
-          <Typography variant="subtitle1" sx={{ fontWeight: 'bold', mb: 1 }}>
-            {section.title}
-          </Typography>
-          <Grid container spacing={2}>
-            {section.fields.map((fieldName) => {
-              const config = fieldConfig[fieldName]
-              const value = investment[fieldName as keyof typeof investment]
-              return (
-                <Grid item xs={12} key={fieldName}>
-                  <NumberInput
-                    id={fieldName}
-                    value={value}
-                    onChange={getDispatchFunction(fieldName)}
-                    {...config}
-                    compact={true}
-                  />
-                </Grid>
-              )
-            })}
+    <Box sx={{ p: 3 }}>
+      <Grid container spacing={4}>
+        {sections.map((section, index) => (
+          <Grid item xs={12} md={4} key={section.title}>
+            <Box>
+              <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 2, color: 'primary.main' }}>
+                {section.title}
+              </Typography>
+              <Grid container spacing={2}>
+                {section.fields.map((fieldName) => {
+                  const config = fieldConfig[fieldName]
+                  const value = investment[fieldName as keyof typeof investment]
+                  
+                  // Determine grid size based on field type
+                  let gridSize = 12
+                  if (section.title === 'Property') {
+                    // Property Value and Down Payment take full width
+                    if (fieldName === 'propertyValue' || fieldName === 'downPayment') {
+                      gridSize = 12
+                    } else {
+                      // Interest Rate, Loan Term, and Closing Costs take half width
+                      gridSize = 6
+                    }
+                  } else {
+                    // All other fields take full width in their sections
+                    gridSize = 12
+                  }
+
+                  return (
+                    <Grid item xs={gridSize} key={fieldName}>
+                      <NumberInput
+                        id={fieldName}
+                        value={value}
+                        onChange={getDispatchFunction(fieldName)}
+                        {...config}
+                        compact={true}
+                      />
+                    </Grid>
+                  )
+                })}
+              </Grid>
+            </Box>
           </Grid>
-          {index < sections.length - 1 && <Divider sx={{ mt: 2 }} />}
-        </Box>
-      ))}
+        ))}
+      </Grid>
     </Box>
   )
 } 

@@ -16,18 +16,18 @@ interface InvestmentState {
 }
 
 const initialState: InvestmentState = {
-  propertyValue: 500000,
-  downPayment: 100000,
+  propertyValue: 1000000,
+  downPayment: 200000,
   interestRate: 6.5,
   loanTerm: 30,
-  monthlyRent: 3000,
-  propertyTax: 6000,
-  insurance: 1200,
+  monthlyRent: 3700,
+  propertyTax: 9000,
+  insurance: 3000,
   maintenance: 2400,
   appreciation: 3,
   rentIncrease: 2,
   hoa: 0,
-  closingCosts: 0
+  closingCosts: 10000
 }
 
 export const investmentSlice = createSlice({

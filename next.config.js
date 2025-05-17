@@ -14,6 +14,11 @@ const nextConfig = {
   },
   // Suppress specific React warnings
   reactStrictMode: false,
+  output: 'export',
+  basePath: '/real-estate-investment-app',
+  images: {
+    unoptimized: true,
+  },
 }
 
 module.exports = nextConfig 

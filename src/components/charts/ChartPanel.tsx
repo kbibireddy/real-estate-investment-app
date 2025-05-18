@@ -10,7 +10,8 @@ import {
   YAxis,
   Tooltip,
   Legend,
-  ResponsiveContainer
+  ResponsiveContainer,
+  ReferenceLine
 } from 'recharts'
 import { RootState } from '@/store/store'
 import { calculateAmortization } from '@/utils/calculations'
@@ -35,8 +36,8 @@ const chartItems: ChartItem[] = [
   
   // Value & Returns
   { id: 'appreciated_value', label: 'Investment Value Over Time', color: '#00ff9d', category: 'value' },
-  { id: 'investment_advantage', label: 'Investment Advantage', color: '#64b5f6', category: 'value' },
   { id: 'sp500_value', label: 'S&P 500 Investment Value', color: '#ab47bc', category: 'value' },
+  { id: 'buy_advantage', label: 'Buy vs Rent Advantage', color: '#26a69a', category: 'value' },
   
   // Rental Analysis
   { id: 'cumulative_rental_cost', label: 'Cumulative Cost of Renting', color: '#ba68c8', category: 'rental' },
@@ -51,7 +52,7 @@ const categoryLabels = {
 }
 
 export default function ChartPanel() {
-  const [selectedItems, setSelectedItems] = useState<string[]>(['cost_of_ownership', 'appreciated_value'])
+  const [selectedItems, setSelectedItems] = useState<string[]>(['buy_advantage'])
   const investment = useSelector((state: RootState) => state.investment)
 
   const handleItemToggle = (itemId: string) => {
@@ -87,19 +88,9 @@ export default function ChartPanel() {
       
       // Calculate rental costs and advantages
       const cumulativeRentalCost = investment.monthlyRent * 12 * 
-        (year === 1 ? 1 : Math.pow(1 + investment.rentIncrease / 100, year - 1))
+        (Math.pow(1 + investment.rentIncrease / 100, year) - 1) / 
+        (investment.rentIncrease / 100)
       
-      // Calculate investment advantage from amortization
-      const investmentAdvantage = row.appreciatedValue - (row.cumulativeInterest + row.cumulativeExpenses)
-      
-      // Calculate buy advantage (savings from buying vs renting)
-      const buyAdvantage = cumulativeRentalCost - costOfOwnership
-      
-      // Calculate effective cost when renting out
-      const rentalIncome = investment.monthlyRent * 12 * 
-        (year === 1 ? 1 : Math.pow(1 + investment.rentIncrease / 100, year - 1))
-      const effectiveRentalOwnership = costOfOwnership - rentalIncome
-
       // Calculate S&P 500 investment value
       let sp500Value = totalInvestmentCost
       for (let i = 0; i < year; i++) {
@@ -109,6 +100,15 @@ export default function ChartPanel() {
         sp500Value *= (1 + yearReturn / 100)
       }
 
+      // Calculate buy advantage using the same formula as RentVsBuyTable
+      const buyAdvantage = row.appreciatedValue - sp500Value + (cumulativeRentalCost - costOfOwnership)
+      
+      // Calculate effective cost when renting out
+      const rentalIncome = investment.monthlyRent * 12 * 
+        (Math.pow(1 + investment.rentIncrease / 100, year) - 1) / 
+        (investment.rentIncrease / 100)
+      const effectiveRentalOwnership = costOfOwnership - rentalIncome
+
       return {
         year,
         loan_balance: Math.max(0, row.endingBalance),
@@ -117,10 +117,10 @@ export default function ChartPanel() {
         maintenance_costs: maintenanceCosts,
         tax_insurance: taxInsurance,
         appreciated_value: row.appreciatedValue,
-        investment_advantage: investmentAdvantage,
         cumulative_rental_cost: Math.max(0, cumulativeRentalCost),
         effective_rental_ownership: effectiveRentalOwnership,
-        sp500_value: sp500Value
+        sp500_value: sp500Value,
+        buy_advantage: buyAdvantage
       }
     })
   }
@@ -236,6 +236,13 @@ export default function ChartPanel() {
                 marginBottom: '-50px'
               }}
             />
+            {selectedItems.includes('buy_advantage') && (
+              <ReferenceLine 
+                y={0} 
+                stroke="#e6edf7" 
+                strokeDasharray="3 3"
+              />
+            )}
             {selectedItems.map(itemId => {
               const item = chartItems.find(i => i.id === itemId)!
               return (

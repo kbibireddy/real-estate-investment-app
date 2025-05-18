@@ -15,7 +15,6 @@ import {
   IconButton
 } from '@mui/material'
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
-import { useState, useEffect } from 'react'
 import { RootState } from '@/store/store'
 import { calculateAmortization } from '@/utils/calculations'
 
@@ -41,18 +40,12 @@ interface ColumnHeader {
 }
 
 const formatCurrency = (value: number): string => {
-  if (value === null || value === undefined || isNaN(value)) {
-    return '0.00'
-  }
-  try {
-    return value.toLocaleString('en-US', {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-      style: 'decimal'
-    })
-  } catch {
-    return Number(value).toFixed(2)
-  }
+  return value.toLocaleString('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0
+  })
 }
 
 const formatDate = (date: Date): string => {
@@ -74,84 +67,65 @@ export default function AmortizationTable() {
     investment.hoa || 0,
     investment.closingCosts || 0,
     investment.propertyValue,
-    investment.appreciation
+    investment.appreciation,
+    investment.maintenance
   )
 
-  // Find the last break-even point where cost of ownership becomes less than appreciated investment
-  const lastBreakEvenIndex = [...amortization].reverse().findIndex((row, idx, arr) => {
-    const currentCostOfOwnership = row.cumulativeInterest + row.cumulativeExpenses
-    const currentAppreciatedValue = row.appreciatedValue
-    
-    // If this is the first row or if the previous row had higher cost than appreciation
-    const prevRow = idx < arr.length - 1 ? arr[idx + 1] : null
-    const prevCostOfOwnership = prevRow ? prevRow.cumulativeInterest + prevRow.cumulativeExpenses : 0
-    const prevAppreciatedValue = prevRow ? prevRow.appreciatedValue : 0
-
-    return currentCostOfOwnership < currentAppreciatedValue && 
-           (!prevRow || prevCostOfOwnership >= prevAppreciatedValue)
-  })
-  const breakEvenIndex = lastBreakEvenIndex === -1 ? -1 : amortization.length - 1 - lastBreakEvenIndex
-
   // Create initial costs row
-  const initialDate = new Date()
   const initialRow = {
-    date: initialDate,
+    date: new Date(),
     beginningBalance: investment.propertyValue - investment.downPayment,
-    payment: investment.downPayment + (investment.closingCosts || 0),
-    principal: 0,
+    payment: 0,
+    principal: investment.downPayment,
     interest: 0,
     endingBalance: investment.propertyValue - investment.downPayment,
-    cumulativePayment: investment.downPayment + (investment.closingCosts || 0),
+    cumulativePayment: investment.downPayment,
     cumulativeInterest: 0,
     cumulativePrincipal: investment.downPayment,
-    cumulativeExpenses: (investment.closingCosts || 0),
-    totalInvestmentCost: investment.downPayment,
-    appreciatedValue: investment.downPayment * (1 + investment.appreciation / 100)
+    cumulativeExpenses: investment.closingCosts || 0,
+    totalInvestmentCost: investment.downPayment + (investment.closingCosts || 0),
+    appreciatedValue: investment.downPayment + (investment.closingCosts || 0)
   }
 
   const columns: ColumnHeader[] = [
     {
-      label: 'Year',
-      tooltip: 'Year number in the schedule',
+      label: 'Year (Date)',
+      tooltip: 'Year of investment and payment date',
       align: 'left'
     },
     {
-      label: 'Payment Date',
-      tooltip: 'The date when each payment is due, starting from today'
-    },
-    {
-      label: 'Loan Balance (Start)',
-      tooltip: 'Remaining loan amount at the start of the period',
+      label: 'Beginning Balance',
+      tooltip: 'Loan balance at start of period',
       align: 'right'
     },
     {
-      label: 'Period Payment',
-      tooltip: 'Amount paid during this period (Principal + Interest)',
+      label: 'Payment',
+      tooltip: 'Monthly payment amount',
       align: 'right'
     },
     {
       label: 'Principal',
-      tooltip: 'Amount of payment that reduces the loan balance',
+      tooltip: 'Amount of payment going to principal',
       align: 'right'
     },
     {
       label: 'Interest',
-      tooltip: 'Cost of borrowing for this period (Rate × Starting Balance)',
+      tooltip: 'Amount of payment going to interest',
       align: 'right'
     },
     {
-      label: 'Loan Balance (End)',
-      tooltip: 'Remaining loan amount after this payment',
+      label: 'Ending Balance',
+      tooltip: 'Remaining loan balance',
       align: 'right'
     },
     {
       label: 'Interest Paid to Date',
-      tooltip: 'Total interest paid since the start of the loan',
+      tooltip: 'Total interest paid to date',
       align: 'right'
     },
     {
       label: 'Additional Expenses to Date',
-      tooltip: 'Cumulative closing costs, property taxes, insurance, HOA fees, and maintenance costs',
+      tooltip: 'Total additional expenses to date (tax, insurance, HOA, etc.)',
       align: 'right'
     },
     {
@@ -168,57 +142,24 @@ export default function AmortizationTable() {
       label: 'Investment with Appreciation',
       tooltip: 'Total investment adjusted for property appreciation over time',
       align: 'right'
+    },
+    {
+      label: 'Investment Advantage',
+      tooltip: 'Difference between appreciated investment value and total cost of ownership',
+      align: 'right'
     }
   ]
 
   return (
-    <Box sx={{ position: 'relative' }}>
-      {breakEvenIndex !== -1 && (
-        <Paper
-          elevation={2}
-          sx={{
-            position: 'absolute',
-            right: -120,
-            top: `${(breakEvenIndex + 2) * 37}px`,
-            padding: '4px 12px',
-            backgroundColor: 'rgba(100, 255, 218, 0.9)',
-            color: '#0A192F',
-            borderRadius: '12px',
-            fontSize: '0.75rem',
-            letterSpacing: '0.03em',
-            fontWeight: 500,
-            display: 'flex',
-            alignItems: 'center',
-            gap: 1,
-            zIndex: 1000,
-            backdropFilter: 'blur(4px)',
-            boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-            '&::before': {
-              content: '""',
-              position: 'absolute',
-              left: -6,
-              top: '50%',
-              transform: 'translateY(-50%)',
-              borderTop: '6px solid transparent',
-              borderBottom: '6px solid transparent',
-              borderRight: '6px solid rgba(100, 255, 218, 0.9)',
-            }
-          }}
-        >
-          Investment Exceeds Cost
-        </Paper>
-      )}
-      <Box sx={{ 
-        display: 'flex', 
-        justifyContent: 'space-between', 
-        alignItems: 'center',
-        mb: 2,
-        px: 1
-      }}>
-        <Typography variant="subtitle1">
-          Amortization Schedule
-        </Typography>
-      </Box>
+    <Box>
+      <Typography variant="h6" gutterBottom>
+        Amortization Schedule Analysis
+      </Typography>
+      <Typography variant="body2" color="text.secondary" sx={{ mb: 3, px: 1 }}>
+        Track your loan payments, property costs, and investment growth over time. Green highlighting shows years where 
+        your appreciated investment value exceeds the cumulative cost of ownership. The Investment Advantage column 
+        helps you identify when your property investment begins to outperform its costs.
+      </Typography>
       <TableContainer 
         component={Paper} 
         sx={{ 
@@ -270,59 +211,58 @@ export default function AmortizationTable() {
                 '&:hover': {
                   backgroundColor: 'rgba(100, 255, 218, 0.2)',
                 },
+                whiteSpace: 'nowrap'
               }}
             >
-              <TableCell>0</TableCell>
-              <TableCell>{formatDate(initialRow.date)}</TableCell>
-              <TableCell align="right">${formatCurrency(initialRow.beginningBalance)}</TableCell>
-              <TableCell align="right">${formatCurrency(initialRow.payment)}</TableCell>
-              <TableCell align="right">${formatCurrency(initialRow.principal)}</TableCell>
-              <TableCell align="right">${formatCurrency(initialRow.interest)}</TableCell>
-              <TableCell align="right">${formatCurrency(initialRow.endingBalance)}</TableCell>
-              <TableCell align="right">${formatCurrency(initialRow.cumulativeInterest)}</TableCell>
-              <TableCell align="right">${formatCurrency(initialRow.cumulativeExpenses)}</TableCell>
-              <TableCell align="right">${formatCurrency(initialRow.cumulativeInterest + initialRow.cumulativeExpenses)}</TableCell>
-              <TableCell align="right">${formatCurrency(initialRow.totalInvestmentCost)}</TableCell>
-              <TableCell align="right">${formatCurrency(initialRow.appreciatedValue)}</TableCell>
+              <TableCell>0 ({formatDate(initialRow.date)})</TableCell>
+              <TableCell align="right">{formatCurrency(initialRow.beginningBalance)}</TableCell>
+              <TableCell align="right">{formatCurrency(initialRow.payment)}</TableCell>
+              <TableCell align="right">{formatCurrency(initialRow.principal)}</TableCell>
+              <TableCell align="right">{formatCurrency(initialRow.interest)}</TableCell>
+              <TableCell align="right">{formatCurrency(initialRow.endingBalance)}</TableCell>
+              <TableCell align="right">{formatCurrency(initialRow.cumulativeInterest)}</TableCell>
+              <TableCell align="right">{formatCurrency(initialRow.cumulativeExpenses)}</TableCell>
+              <TableCell align="right">{formatCurrency(initialRow.cumulativeInterest + initialRow.cumulativeExpenses)}</TableCell>
+              <TableCell align="right">{formatCurrency(initialRow.totalInvestmentCost)}</TableCell>
+              <TableCell align="right">{formatCurrency(initialRow.appreciatedValue)}</TableCell>
+              <TableCell align="right">{formatCurrency(initialRow.appreciatedValue - (initialRow.cumulativeInterest + initialRow.cumulativeExpenses))}</TableCell>
             </TableRow>
             {amortization.map((row: AmortizationRow, index: number) => {
               const costOfOwnership = row.cumulativeInterest + row.cumulativeExpenses
-              const isBreakEvenRow = index === breakEvenIndex
+              const investmentAdvantage = row.appreciatedValue - costOfOwnership
 
               return (
                 <TableRow 
                   key={index}
                   sx={{
                     '&:last-child td, &:last-child th': { border: 0 },
+                    backgroundColor: investmentAdvantage > 0 ? 'rgba(100, 255, 218, 0.1)' : 'inherit',
                     '&:hover': {
-                      backgroundColor: 'rgba(100, 255, 218, 0.1)',
+                      backgroundColor: investmentAdvantage > 0 ? 'rgba(100, 255, 218, 0.2)' : 'rgba(0, 0, 0, 0.04)',
                     },
-                    ...(isBreakEvenRow && {
-                      backgroundColor: 'rgba(100, 255, 218, 0.15)',
-                      '&:hover': {
-                        backgroundColor: 'rgba(100, 255, 218, 0.25)',
-                      }
-                    })
+                    whiteSpace: 'nowrap'
                   }}
                 >
-                  <TableCell>{index + 1}</TableCell>
-                  <Tooltip 
-                    title={isBreakEvenRow ? "Investment value begins to exceed cost of ownership" : ""}
-                    placement="top"
-                    arrow
+                  <TableCell>{index + 1} ({formatDate(row.date)})</TableCell>
+                  <TableCell align="right">{formatCurrency(row.beginningBalance)}</TableCell>
+                  <TableCell align="right">{formatCurrency(row.payment)}</TableCell>
+                  <TableCell align="right">{formatCurrency(row.principal)}</TableCell>
+                  <TableCell align="right">{formatCurrency(row.interest)}</TableCell>
+                  <TableCell align="right">{formatCurrency(row.endingBalance)}</TableCell>
+                  <TableCell align="right">{formatCurrency(row.cumulativeInterest)}</TableCell>
+                  <TableCell align="right">{formatCurrency(row.cumulativeExpenses)}</TableCell>
+                  <TableCell align="right">{formatCurrency(costOfOwnership)}</TableCell>
+                  <TableCell align="right">{formatCurrency(row.totalInvestmentCost)}</TableCell>
+                  <TableCell align="right">{formatCurrency(row.appreciatedValue)}</TableCell>
+                  <TableCell 
+                    align="right"
+                    sx={{
+                      color: investmentAdvantage > 0 ? 'success.main' : 'error.main',
+                      fontWeight: 'bold'
+                    }}
                   >
-                    <TableCell>{formatDate(row.date)}</TableCell>
-                  </Tooltip>
-                  <TableCell align="right">${formatCurrency(row.beginningBalance)}</TableCell>
-                  <TableCell align="right">${formatCurrency(row.payment)}</TableCell>
-                  <TableCell align="right">${formatCurrency(row.principal)}</TableCell>
-                  <TableCell align="right">${formatCurrency(row.interest)}</TableCell>
-                  <TableCell align="right">${formatCurrency(row.endingBalance)}</TableCell>
-                  <TableCell align="right">${formatCurrency(row.cumulativeInterest)}</TableCell>
-                  <TableCell align="right">${formatCurrency(row.cumulativeExpenses)}</TableCell>
-                  <TableCell align="right">${formatCurrency(costOfOwnership)}</TableCell>
-                  <TableCell align="right">${formatCurrency(row.totalInvestmentCost)}</TableCell>
-                  <TableCell align="right">${formatCurrency(row.appreciatedValue)}</TableCell>
+                    {formatCurrency(investmentAdvantage)}
+                  </TableCell>
                 </TableRow>
               )
             })}

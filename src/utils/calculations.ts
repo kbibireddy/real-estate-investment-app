@@ -22,7 +22,8 @@ export function calculateAmortization(
   hoa: number,
   closingCosts: number,
   propertyValue: number,
-  appreciationRate: number
+  appreciationRate: number,
+  maintenance: number
 ): AmortizationRow[] {
   const monthlyInterestRate = annualInterestRate / 100 / 12
   const numberOfPayments = loanTermYears * 12
@@ -36,7 +37,8 @@ export function calculateAmortization(
   let cumulativeInterest = 0
   let cumulativePrincipal = propertyValue - loanAmount // Start with down payment
   const startDate = new Date()
-  const annualExpenses = propertyTax + insurance + hoa
+  // Include all annual expenses: property tax, insurance, maintenance, and HOA
+  const annualExpenses = propertyTax + insurance + maintenance + hoa
   let cumulativeExpenses = closingCosts // Start with closing costs
 
   for (let year = 1; year <= loanTermYears; year++) {
@@ -59,6 +61,7 @@ export function calculateAmortization(
     cumulativePayment += yearlyPrincipal + yearlyInterest
     cumulativeInterest += yearlyInterest
     cumulativePrincipal += yearlyPrincipal
+    // Add annual expenses to cumulative expenses
     cumulativeExpenses += annualExpenses
     const totalInvestmentCost = cumulativePrincipal
     const appreciatedValue = totalInvestmentCost * Math.pow(1 + appreciationRate / 100, year)

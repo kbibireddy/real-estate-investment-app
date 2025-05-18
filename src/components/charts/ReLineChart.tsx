@@ -6,13 +6,13 @@ import {
   Line,
   XAxis,
   YAxis,
-  Tooltip,
   Legend,
   ResponsiveContainer,
   Label
 } from 'recharts'
 import { RootState } from '@/store/store'
 import { calculateAmortization, calculateFutureValue } from '@/utils/calculations'
+import { useState } from 'react'
 
 interface ReLineChartProps {
   items: string[]
@@ -50,12 +50,37 @@ const CHART_LABELS = {
 
 export default function ReLineChart({ items, domain }: ReLineChartProps) {
   const investment = useSelector((state: RootState) => state.investment)
+  const [activeValues, setActiveValues] = useState<{ [key: string]: string }>({})
+  const [activeYear, setActiveYear] = useState<number | null>(null)
+
+  const handleMouseMove = (e: any) => {
+    if (e.activePayload) {
+      const newValues: { [key: string]: string } = {}
+      e.activePayload.forEach((payload: any) => {
+        newValues[payload.dataKey] = formatValue(payload.value)
+      })
+      setActiveValues(newValues)
+      setActiveYear(e.activePayload[0].payload.year)
+    }
+  }
+
+  const handleMouseLeave = () => {
+    setActiveValues({})
+    setActiveYear(null)
+  }
 
   const generateChartData = (): ChartData[] => {
     const amortization = calculateAmortization(
       investment.propertyValue - investment.downPayment,
       investment.interestRate,
-      investment.loanTerm
+      investment.loanTerm,
+      investment.propertyTax,
+      investment.insurance,
+      investment.hoa || 0,
+      investment.closingCosts || 0,
+      investment.propertyValue,
+      investment.appreciation,
+      investment.maintenance
     )
 
     return Array.from({ length: investment.loanTerm }, (_, index) => {
@@ -123,11 +148,35 @@ export default function ReLineChart({ items, domain }: ReLineChartProps) {
   const data = generateChartData()
 
   return (
-    <div style={{ width: '100%', height: 400 }}>
+    <div style={{ width: '100%', height: 400, position: 'relative' }}>
+      {activeYear && Object.keys(activeValues).length > 0 && (
+        <div
+          style={{
+            position: 'absolute',
+            top: 10,
+            left: 10,
+            padding: '10px',
+            backgroundColor: '#0d2140',
+            border: '1px solid #233554',
+            borderRadius: '4px',
+            color: '#e6edf7',
+            zIndex: 1000,
+          }}
+        >
+          <div style={{ marginBottom: '5px', fontWeight: 'bold' }}>Year {activeYear}</div>
+          {items.map((item, index) => (
+            <div key={item} style={{ color: COLORS[index % COLORS.length] }}>
+              {CHART_LABELS[item as keyof typeof CHART_LABELS] || item}: {activeValues[item]}
+            </div>
+          ))}
+        </div>
+      )}
       <ResponsiveContainer>
         <LineChart 
           data={data} 
           margin={{ top: 30, right: 30, left: 20, bottom: 20 }}
+          onMouseMove={handleMouseMove}
+          onMouseLeave={handleMouseLeave}
         >
           <XAxis 
             dataKey="year"
@@ -155,18 +204,6 @@ export default function ReLineChart({ items, domain }: ReLineChartProps) {
               fill="#8892b0"
             />
           </YAxis>
-          <Tooltip 
-            formatter={(value: number, name: string) => [
-              formatValue(value),
-              CHART_LABELS[name as keyof typeof CHART_LABELS] || name
-            ]}
-            contentStyle={{
-              backgroundColor: '#0d2140',
-              border: 'none',
-              borderRadius: '4px',
-              color: '#e6edf7'
-            }}
-          />
           <Legend 
             formatter={(value: string) => 
               CHART_LABELS[value as keyof typeof CHART_LABELS] || value

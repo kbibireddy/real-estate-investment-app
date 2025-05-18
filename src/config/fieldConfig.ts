@@ -109,10 +109,10 @@ export const fieldConfig: FieldsConfiguration = {
     default: 3,
     step: 0.1,
     increment: 0.5,
-    label: 'Appreciation Rate',
+    label: 'Property Appreciation Rate',
     prefix: '',
-    suffix: '%',
-    description: 'Expected annual property value increase'
+    suffix: '%/year',
+    description: 'Expected year-over-year increase in property value. This rate compounds annually, similar to how rent increases work. Historical average is 3-4% nationally, but can vary significantly by location.'
   },
   rentIncrease: {
     min: 0,

@@ -5,6 +5,8 @@ import { Container, Grid, Paper, Tabs, Tab, Typography, Box } from '@mui/materia
 import ControlPanel from '@/components/ControlPanel'
 import AmortizationTable from '@/components/AmortizationTable'
 import ChartPanel from '@/components/ChartPanel'
+import RentVsBuyTable from '@/components/RentVsBuyTable'
+import RentingOutTable from '@/components/RentingOutTable'
 import TabPanel from '@/components/common/TabPanel'
 
 export default function Home() {
@@ -43,7 +45,8 @@ export default function Home() {
                 value={tabValue} 
                 onChange={handleTabChange} 
                 aria-label="analysis tabs"
-                variant="fullWidth"
+                variant="scrollable"
+                scrollButtons="auto"
               >
                 <Tab 
                   label="Amortization Table" 
@@ -51,9 +54,19 @@ export default function Home() {
                   aria-controls="tabpanel-0"
                 />
                 <Tab 
-                  label="Charts" 
+                  label="Rent vs Buy" 
                   id="tab-1" 
                   aria-controls="tabpanel-1"
+                />
+                <Tab 
+                  label="Renting Out" 
+                  id="tab-2" 
+                  aria-controls="tabpanel-2"
+                />
+                <Tab 
+                  label="Charts" 
+                  id="tab-3" 
+                  aria-controls="tabpanel-3"
                 />
               </Tabs>
             </Box>
@@ -63,6 +76,14 @@ export default function Home() {
             </TabPanel>
             
             <TabPanel value={tabValue} index={1}>
+              <RentVsBuyTable />
+            </TabPanel>
+
+            <TabPanel value={tabValue} index={2}>
+              <RentingOutTable />
+            </TabPanel>
+
+            <TabPanel value={tabValue} index={3}>
               <ChartPanel />
             </TabPanel>
           </Paper>

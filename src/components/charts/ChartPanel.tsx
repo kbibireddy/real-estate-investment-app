@@ -14,6 +14,7 @@ import {
 } from 'recharts'
 import { RootState } from '@/store/store'
 import { calculateAmortization } from '@/utils/calculations'
+import sp500Data from '@/constants/sp500-historical.json'
 
 interface ChartItem {
   id: string
@@ -35,6 +36,7 @@ const chartItems: ChartItem[] = [
   // Value & Returns
   { id: 'appreciated_value', label: 'Investment Value Over Time', color: '#00ff9d', category: 'value' },
   { id: 'investment_advantage', label: 'Investment Advantage', color: '#64b5f6', category: 'value' },
+  { id: 'sp500_value', label: 'S&P 500 Investment Value', color: '#ab47bc', category: 'value' },
   
   // Rental Analysis
   { id: 'cumulative_rental_cost', label: 'Cumulative Cost of Renting', color: '#ba68c8', category: 'rental' },
@@ -74,6 +76,9 @@ export default function ChartPanel() {
       investment.maintenance
     )
 
+    // Calculate initial investment amount (down payment + closing costs)
+    const totalInvestmentCost = investment.downPayment + (investment.closingCosts || 0)
+
     return amortization.map((row, index) => {
       const year = index + 1
       const taxInsurance = (investment.propertyTax + investment.insurance) * year
@@ -82,8 +87,7 @@ export default function ChartPanel() {
       
       // Calculate rental costs and advantages
       const cumulativeRentalCost = investment.monthlyRent * 12 * 
-        (Math.pow(1 + investment.rentIncrease / 100, year) - 1) / 
-        (investment.rentIncrease / 100)
+        (year === 1 ? 1 : Math.pow(1 + investment.rentIncrease / 100, year - 1))
       
       // Calculate investment advantage from amortization
       const investmentAdvantage = row.appreciatedValue - (row.cumulativeInterest + row.cumulativeExpenses)
@@ -93,9 +97,17 @@ export default function ChartPanel() {
       
       // Calculate effective cost when renting out
       const rentalIncome = investment.monthlyRent * 12 * 
-        (Math.pow(1 + investment.rentIncrease / 100, year) - 1) / 
-        (investment.rentIncrease / 100)
+        (year === 1 ? 1 : Math.pow(1 + investment.rentIncrease / 100, year - 1))
       const effectiveRentalOwnership = costOfOwnership - rentalIncome
+
+      // Calculate S&P 500 investment value
+      let sp500Value = totalInvestmentCost
+      for (let i = 0; i < year; i++) {
+        // Use modulo to cycle through historical returns if we run out of years
+        const returnIndex = i % sp500Data.historicalReturns.length
+        const yearReturn = sp500Data.historicalReturns[returnIndex].return
+        sp500Value *= (1 + yearReturn / 100)
+      }
 
       return {
         year,
@@ -107,7 +119,8 @@ export default function ChartPanel() {
         appreciated_value: row.appreciatedValue,
         investment_advantage: investmentAdvantage,
         cumulative_rental_cost: Math.max(0, cumulativeRentalCost),
-        effective_rental_ownership: effectiveRentalOwnership
+        effective_rental_ownership: effectiveRentalOwnership,
+        sp500_value: sp500Value
       }
     })
   }

@@ -94,36 +94,66 @@ A comprehensive web application for analyzing real estate investments, built wit
 - Consult with financial advisors
 - Results don't guarantee future performance
 
-## Technical Information
+## 🛠 Technical Documentation
 
-## Features
+### Project Structure
+```
+src/
+├── app/              # Next.js app router components
+├── components/       # React components
+│   ├── charts/      # Chart-related components
+│   ├── forms/       # Form components
+│   ├── tables/      # Table components
+│   ├── layout/      # Layout components
+│   └── common/      # Shared/reusable components
+├── config/          # Configuration files
+├── constants/       # Constants and default values
+├── hooks/           # Custom React hooks
+├── services/        # External services and APIs
+├── store/           # Redux store and slices
+├── styles/          # Global styles
+├── types/           # TypeScript type definitions
+└── utils/           # Utility functions
+```
 
-### Property Analysis
+### Key Features
+
+#### Property Analysis
 - Interactive property value and loan amount calculations
 - Customizable down payment and loan terms
 - Real-time amortization schedule
 - Property appreciation projections
 
-### Financial Analysis
+#### Financial Analysis
 - Monthly and annual cash flow calculations
 - Rental income projections with customizable growth rates
 - Expense tracking (property tax, insurance, maintenance)
 - Equity growth analysis
 
-### Visualization
+#### Visualization
 - Dynamic charts for property value and equity growth
 - Cash flow analysis visualizations
 - Loan amortization breakdown
 - Interactive data switching between different metrics
 
-### User Interface
+#### User Interface
 - Modern, responsive Material UI design
 - Dark theme with navy blue (#0a192f) and cyan (#64ffda) accents
 - Intuitive slider controls for all inputs
 - Detailed tooltips and help text
 - Mobile-friendly layout
 
-## Getting Started
+### State Management
+- Uses Redux Toolkit for centralized state management
+- Implements memoization for performance optimization
+- Provides real-time calculations and updates
+
+### Type Safety
+- Comprehensive TypeScript interfaces
+- Strict type checking
+- Type-safe Redux actions and state
+
+## 🚀 Development
 
 ### Prerequisites
 - Node.js 18.0.0 or higher
@@ -163,28 +193,14 @@ yarn build
 yarn start
 ```
 
-## Technology Stack
+### Available Scripts
+- `npm run dev`: Start development server
+- `npm run build`: Create production build
+- `npm start`: Start production server
+- `npm run lint`: Run ESLint
+- `npm run format`: Format code with Prettier
 
-- **Framework**: Next.js 14
-- **UI Library**: Material UI (MUI)
-- **State Management**: Redux Toolkit
-- **Charts**: Recharts
-- **Styling**: Tailwind CSS
-- **Type Safety**: TypeScript
-
-## Project Structure
-
-```
-src/
-├── app/              # Next.js app router components
-├── components/       # Reusable UI components
-├── config/          # Configuration files
-├── store/           # Redux store and slices
-├── styles/          # Global styles
-└── utils/           # Utility functions
-```
-
-## Contributing
+## 🤝 Contributing
 
 1. Fork the repository
 2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
@@ -192,11 +208,18 @@ src/
 4. Push to the branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request
 
-## License
+### Development Guidelines
+- Follow TypeScript best practices
+- Use functional components with hooks
+- Implement proper error handling
+- Write clear documentation
+- Follow the existing code style
+
+## 📝 License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
 
-## Acknowledgments
+## 🙏 Acknowledgments
 
 - Original inspiration: [https://main.d3h1lgzt62unld.amplifyapp.com/](https://main.d3h1lgzt62unld.amplifyapp.com/)
 - Material UI team for the excellent component library

@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { Box, Paper, Typography, Divider, Grid } from '@mui/material'
 import { RootState } from '@/store/store'
 import { fieldConfig } from '@/config/fieldConfig'
-import NumberInput from './common/NumberInput'
+import NumberInput from '@/components/common/NumberInput'
 import {
   updatePropertyValue,
   updateDownPayment,

@@ -2,11 +2,11 @@
 
 import { useState } from 'react'
 import { Container, Grid, Paper, Tabs, Tab, Typography, Box } from '@mui/material'
-import ControlPanel from '@/components/ControlPanel'
-import AmortizationTable from '@/components/AmortizationTable'
-import ChartPanel from '@/components/ChartPanel'
-import RentVsBuyTable from '@/components/RentVsBuyTable'
-import RentingOutTable from '@/components/RentingOutTable'
+import ControlPanel from '@/components/forms/ControlPanel'
+import AmortizationTable from '@/components/tables/AmortizationTable'
+import ChartPanel from '@/components/charts/ChartPanel'
+import RentVsBuyTable from '@/components/tables/RentVsBuyTable'
+import RentingOutTable from '@/components/tables/RentingOutTable'
 import TabPanel from '@/components/common/TabPanel'
 
 export default function Home() {

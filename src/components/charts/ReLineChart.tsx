@@ -8,7 +8,8 @@ import {
   YAxis,
   Legend,
   ResponsiveContainer,
-  Label
+  Label,
+  LabelList
 } from 'recharts'
 import { RootState } from '@/store/store'
 import { calculateAmortization, calculateFutureValue } from '@/utils/calculations'
@@ -31,6 +32,15 @@ const formatValue = (value: number) => {
     minimumFractionDigits: 0,
     maximumFractionDigits: 0
   })}`
+}
+
+const formatShortValue = (value: number) => {
+  if (value >= 1000000) {
+    return `$${(value / 1000000).toFixed(1)}M`
+  } else if (value >= 1000) {
+    return `$${(value / 1000).toFixed(0)}K`
+  }
+  return `$${value.toFixed(0)}`
 }
 
 const CHART_LABELS = {
@@ -222,9 +232,20 @@ export default function ReLineChart({ items, domain }: ReLineChartProps) {
               name={item}
               stroke={COLORS[index % COLORS.length]}
               strokeWidth={2}
-              dot={{ r: 0 }}
+              dot={false}
               activeDot={{ r: 6, fill: COLORS[index % COLORS.length] }}
-            />
+            >
+              <LabelList
+                dataKey={item}
+                position="top"
+                fill={COLORS[index % COLORS.length]}
+                fontSize={12}
+                formatter={(value: number) => {
+                  const dataPoint = data.find(d => d[item] === value)
+                  return dataPoint && dataPoint.year % 5 === 0 ? formatShortValue(value) : ''
+                }}
+              />
+            </Line>
           ))}
         </LineChart>
       </ResponsiveContainer>

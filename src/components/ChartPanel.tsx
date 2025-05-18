@@ -29,18 +29,16 @@ const chartItems: ChartItem[] = [
   
   // Cost Metrics
   { id: 'cost_of_ownership', label: 'Total Cost of Ownership', color: '#ff9800', category: 'costs' },
-  { id: 'cumulative_rental_cost', label: 'Cumulative Cost if Renting', color: '#ba68c8', category: 'costs' },
   { id: 'maintenance_costs', label: 'Maintenance Costs', color: '#f06292', category: 'costs' },
   { id: 'tax_insurance', label: 'Tax & Insurance', color: '#4db6ac', category: 'costs' },
   
   // Value & Returns
-  { id: 'appreciated_value', label: 'Property Value with Appreciation', color: '#00ff9d', category: 'value' },
-  { id: 'equity_built', label: 'Equity Built', color: '#64b5f6', category: 'value' },
-  { id: 'net_worth_impact', label: 'Net Worth Impact', color: '#4caf50', category: 'value' },
+  { id: 'appreciated_value', label: 'Investment Value Over Time', color: '#00ff9d', category: 'value' },
+  { id: 'investment_advantage', label: 'Investment Advantage', color: '#64b5f6', category: 'value' },
   
   // Rental Analysis
-  { id: 'rental_income', label: 'Potential Rental Income', color: '#ffa726', category: 'rental' },
-  { id: 'net_rental_profit', label: 'Net Rental Profit', color: '#66bb6a', category: 'rental' }
+  { id: 'cumulative_rental_cost', label: 'Cumulative Cost of Renting', color: '#ba68c8', category: 'rental' },
+  { id: 'effective_rental_ownership', label: 'Effective Cost When Renting Out', color: '#66bb6a', category: 'rental' }
 ]
 
 const categoryLabels = {
@@ -51,7 +49,7 @@ const categoryLabels = {
 }
 
 export default function ChartPanel() {
-  const [selectedItems, setSelectedItems] = useState<string[]>(['appreciated_value', 'equity_built', 'net_worth_impact'])
+  const [selectedItems, setSelectedItems] = useState<string[]>(['cost_of_ownership', 'appreciated_value'])
   const investment = useSelector((state: RootState) => state.investment)
 
   const handleItemToggle = (itemId: string) => {
@@ -82,33 +80,34 @@ export default function ChartPanel() {
       const maintenanceCosts = (investment.propertyValue * 0.01) * year // Assuming 1% maintenance cost per year
       const costOfOwnership = row.cumulativeInterest + row.cumulativeExpenses
       
-      // Calculate rental metrics
-      const rentalIncome = investment.monthlyRent * 12 * 
-        Math.pow(1 + investment.rentIncrease / 100, year)
-      const netRentalProfit = rentalIncome - (row.payment + taxInsurance + maintenanceCosts)
-      
-      // Calculate cumulative rental cost (if renting instead of buying)
+      // Calculate rental costs and advantages
       const cumulativeRentalCost = investment.monthlyRent * 12 * 
         (Math.pow(1 + investment.rentIncrease / 100, year) - 1) / 
         (investment.rentIncrease / 100)
       
-      // Calculate equity and net worth impact
-      const equityBuilt = investment.propertyValue - row.endingBalance
-      const netWorthImpact = row.appreciatedValue - row.endingBalance
+      // Calculate investment advantage from amortization
+      const investmentAdvantage = row.appreciatedValue - (row.cumulativeInterest + row.cumulativeExpenses)
+      
+      // Calculate buy advantage (savings from buying vs renting)
+      const buyAdvantage = cumulativeRentalCost - costOfOwnership
+      
+      // Calculate effective cost when renting out
+      const rentalIncome = investment.monthlyRent * 12 * 
+        (Math.pow(1 + investment.rentIncrease / 100, year) - 1) / 
+        (investment.rentIncrease / 100)
+      const effectiveRentalOwnership = costOfOwnership - rentalIncome
 
       return {
         year,
         loan_balance: Math.max(0, row.endingBalance),
         cumulative_interest: Math.max(0, row.cumulativeInterest),
         cost_of_ownership: Math.max(0, costOfOwnership),
-        cumulative_rental_cost: Math.max(0, cumulativeRentalCost),
         maintenance_costs: maintenanceCosts,
         tax_insurance: taxInsurance,
         appreciated_value: row.appreciatedValue,
-        equity_built: Math.max(0, equityBuilt),
-        net_worth_impact: netWorthImpact,
-        rental_income: rentalIncome,
-        net_rental_profit: netRentalProfit
+        investment_advantage: investmentAdvantage,
+        cumulative_rental_cost: Math.max(0, cumulativeRentalCost),
+        effective_rental_ownership: effectiveRentalOwnership
       }
     })
   }

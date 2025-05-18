@@ -14,6 +14,7 @@ import {
 import { useSelector } from 'react-redux'
 import { RootState } from '@/store/store'
 import { calculateAmortization } from '@/utils/calculations'
+import sp500Data from '@/constants/sp500-historical.json'
 
 export default function RentVsBuyTable() {
   const investment = useSelector((state: RootState) => state.investment)
@@ -32,6 +33,9 @@ export default function RentVsBuyTable() {
       investment.maintenance
     )
 
+    // Calculate initial investment amount (down payment + closing costs)
+    const totalInvestmentCost = investment.downPayment + (investment.closingCosts || 0)
+
     const startDate = new Date()
     return amortization.map((row, index) => {
       const year = index + 1
@@ -43,12 +47,23 @@ export default function RentVsBuyTable() {
         (Math.pow(1 + investment.rentIncrease / 100, year) - 1) / 
         (investment.rentIncrease / 100)
 
+      // Calculate S&P 500 investment value using historical returns
+      let sp500Value = totalInvestmentCost
+      for (let i = 0; i < year; i++) {
+        // Use modulo to cycle through historical returns if we run out of years
+        const returnIndex = i % sp500Data.historicalReturns.length
+        const yearReturn = sp500Data.historicalReturns[returnIndex].return
+        sp500Value *= (1 + yearReturn / 100)
+      }
+
       return {
         year,
         yearDate,
         costOfOwnership,
         appreciatedValue,
-        rentCost
+        rentCost,
+        sp500Value,
+        buyAdvantage: appreciatedValue - sp500Value + (rentCost - costOfOwnership)
       }
     })
   }
@@ -74,12 +89,12 @@ export default function RentVsBuyTable() {
   return (
     <Box>
       <Typography variant="h6" gutterBottom>
-        Rent vs Buy Comparison
+        Rent vs Buy vs S&P 500 Comparison
       </Typography>
       <Typography variant="body2" color="text.secondary" sx={{ mb: 3, px: 1 }}>
-        Compare the financial impact of renting versus buying over time. Green highlighting indicates years where 
-        renting would cost more than owning, suggesting a financial advantage to buying. The Buy Advantage column 
-        shows your potential savings from buying instead of renting, accounting for property appreciation and rent increases.
+        Compare the financial impact of renting, buying, and investing in the S&P 500. The Buy Advantage column shows the 
+        total benefit of buying versus both renting and investing in the S&P 500, accounting for property appreciation, 
+        rental costs saved, and the opportunity cost of not investing in the stock market.
       </Typography>
       <TableContainer component={Paper}>
         <Table size="small">
@@ -89,7 +104,18 @@ export default function RentVsBuyTable() {
               <TableCell align="right">Cost of Ownership</TableCell>
               <TableCell align="right">Investment Value with Appreciation</TableCell>
               <TableCell align="right">Cost of Renting</TableCell>
-              <TableCell align="right">Buy Advantage</TableCell>
+              <TableCell 
+                align="right"
+                sx={{ borderLeft: '2px solid rgba(224, 224, 224, 1)' }}
+              >
+                S&P 500 Investment Value
+              </TableCell>
+              <TableCell 
+                align="right"
+                sx={{ borderLeft: '2px solid rgba(224, 224, 224, 1)' }}
+              >
+                Buy Advantage
+              </TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -98,9 +124,9 @@ export default function RentVsBuyTable() {
                 key={row.year}
                 sx={{
                   '&:last-child td, &:last-child th': { border: 0 },
-                  backgroundColor: row.rentCost > row.costOfOwnership ? 'rgba(100, 255, 218, 0.1)' : 'inherit',
+                  backgroundColor: row.buyAdvantage > 0 ? 'rgba(100, 255, 218, 0.1)' : 'inherit',
                   '&:hover': {
-                    backgroundColor: row.rentCost > row.costOfOwnership ? 'rgba(100, 255, 218, 0.2)' : 'rgba(0, 0, 0, 0.04)',
+                    backgroundColor: row.buyAdvantage > 0 ? 'rgba(100, 255, 218, 0.2)' : 'rgba(0, 0, 0, 0.04)',
                   },
                 }}
               >
@@ -110,12 +136,19 @@ export default function RentVsBuyTable() {
                 <TableCell align="right">{formatCurrency(row.rentCost)}</TableCell>
                 <TableCell 
                   align="right"
+                  sx={{ borderLeft: '2px solid rgba(224, 224, 224, 1)' }}
+                >
+                  {formatCurrency(row.sp500Value)}
+                </TableCell>
+                <TableCell 
+                  align="right"
                   sx={{
-                    color: row.rentCost > row.costOfOwnership ? 'success.main' : 'error.main',
+                    borderLeft: '2px solid rgba(224, 224, 224, 1)',
+                    color: row.buyAdvantage > 0 ? 'success.main' : 'error.main',
                     fontWeight: 'bold'
                   }}
                 >
-                  {formatCurrency(row.rentCost - row.costOfOwnership)}
+                  {formatCurrency(row.buyAdvantage)}
                 </TableCell>
               </TableRow>
             ))}
